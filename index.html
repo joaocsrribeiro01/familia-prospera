@@ -157,6 +157,15 @@ textarea{min-height:72px;resize:vertical}
 .code{font-family:var(--display);font-weight:800;letter-spacing:.12em;font-size:1.3rem;color:var(--accent)}
 @media (max-width:700px){.authbox{grid-template-columns:1fr}.authbox .tree{justify-self:center;width:180px}.famgrid{grid-template-columns:1fr}}
 #app[hidden]{display:none!important}
+.aboutgrid{display:grid;grid-template-columns:minmax(260px,1.25fr) 1fr;gap:18px;align-items:center}
+.aboutgrid .tree svg{width:100%;height:auto;display:block}
+.flow{display:grid;gap:6px}
+.flowstep{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:30px 1fr;gap:4px 10px;align-items:start}
+.flowstep .num{grid-row:span 3;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.flowstep .k{font-family:var(--display);font-weight:800;color:var(--c)}
+.flowarrow{display:flex;align-items:center;gap:8px;padding-left:16px;font-size:.82rem;font-weight:700;color:var(--muted)}
+.flowarrow b{font-size:1.1rem;color:var(--accent)}
+@media (max-width:700px){.aboutgrid{grid-template-columns:1fr}}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -233,13 +242,14 @@ textarea{min-height:72px;resize:vertical}
   <section class="view" id="view-arvore">
     <div class="card">
       <h2>Prosperidade é uma árvore que a gente cultiva</h2>
-      <p class="lead">Cada pessoa da família cuida da sua própria árvore. Quando a raiz, o tronco e a copa estão fortes, os frutos aparecem. Toda meta que você criar aqui cuida de uma dessas partes.</p>
+      <p class="lead">Cada pessoa da família é uma árvore, e <b>a família é o jardim</b> onde essas árvores crescem lado a lado. Cada um cuida da sua própria árvore, e o jardim fica bonito quando todas florescem.</p>
+      <p class="lead">Na árvore, tudo começa pela raiz: ela sustenta o tronco, o tronco leva força para a copa, e a copa produz os frutos. Toda meta que você criar aqui cuida de uma dessas partes.</p>
     </div>
     <div class="scene">
-      <div class="treegrid" id="aboutTree"></div>
+      <div class="aboutgrid" id="aboutTree"></div>
     </div>
     <div class="card">
-      <p class="quote">Prosperidade é o fruto de quem cultiva mente, corpo e espírito com constância.</p>
+      <p class="quote">Prosperidade é o fruto de quem cultiva espírito, corpo e mente com constância. E a família é o jardim onde tudo floresce junto.</p>
     </div>
     <div class="card">
       <h2>O ciclo de cada trimestre</h2>
@@ -323,8 +333,8 @@ textarea{min-height:72px;resize:vertical}
   <!-- MURAL -->
   <section class="view" id="view-mural" hidden>
     <div class="card">
-      <h2>O pomar da família</h2>
-      <p>Cada pessoa tem a sua árvore. Aqui aparecem as metas do trimestre que cada um escolheu mostrar e quanto cada parte já cresceu. O mural serve para apoiar e celebrar, não para cobrar.</p>
+      <h2>O jardim da família</h2>
+      <p>Cada pessoa é uma árvore, e a família é o jardim. Aqui aparecem as metas do trimestre que cada um escolheu mostrar e quanto cada parte já cresceu. O mural serve para apoiar e celebrar, não para cobrar.</p>
     </div>
     <div class="card" id="inviteCard">
       <h3>Convide sua família</h3>
@@ -371,7 +381,7 @@ const $=id=>document.getElementById(id);
 
 /* ---------- desenho da árvore ---------- */
 let TID=0;
-function treeSVG(pr,label){
+function treeSVG(pr,label,legendas){
   const id="t"+(++TID);
   const cl=v=>Math.max(0,Math.min(100,+v||0));
   const op=v=>(0.6+0.4*cl(v)/100).toFixed(2);
@@ -410,6 +420,21 @@ function treeSVG(pr,label){
     if(i<n)s+='<path d="M'+x+' '+(y-7)+' q1 -4 4 -6" stroke="#5e3a22" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="'+(x+6)+'" cy="'+(y-12)+'" rx="4.5" ry="2.2" fill="#4c9a52" transform="rotate(-30 '+(x+6)+' '+(y-12)+')"/><circle cx="'+x+'" cy="'+y+'" r="8.5" fill="url(#'+id+'f)"/><circle cx="'+(x-2.8)+'" cy="'+(y-3)+'" r="2.4" fill="#fff" opacity=".65"/>';
     else s+='<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="#fff" fill-opacity=".35" stroke="'+(g(pr.frutos)?"#c9c0ae":"#eaa860")+'" stroke-width="1.3" stroke-dasharray="3 3"/>';
   });
+  if(legendas){
+    const L=[
+      ["Frutos (Prosperidade)","#c95f16",154,86,122,16,"start"],
+      ["Copa (Mente)","#2f7440",70,104,40,56,"end"],
+      ["Tronco (Corpo)","#6b4428",127,184,150,176,"start"],
+      ["Raiz (Espírito)","#5d4290",96,262,80,258,"end"]
+    ];
+    L.forEach(l=>{
+      const [t,c,x1,y1,x2,y2,an]=l,w=t.length*8.6+18,rx=an==="start"?x2:x2-w;
+      s+='<path d="M'+x1+' '+y1+' L'+x2+' '+y2+'" stroke="'+c+'" stroke-width="1.4" stroke-dasharray="3 2"/><circle cx="'+x1+'" cy="'+y1+'" r="3" fill="'+c+'"/>';
+      s+='<rect x="'+rx+'" y="'+(y2-13)+'" width="'+w+'" height="26" rx="13" fill="#fffdf8" stroke="'+c+'" stroke-width="1.4"/>';
+      s+='<text x="'+(rx+w/2)+'" y="'+(y2+5)+'" text-anchor="middle" font-family="Nunito Sans, sans-serif" font-size="15" font-weight="800" fill="'+c+'">'+t+'</text>';
+    });
+    s=s.replace('viewBox="0 0 240 280"','viewBox="-88 0 422 282"');
+  }
   return s+'</svg>';
 }
 
@@ -520,15 +545,26 @@ function hideBanner(){$("banner").hidden=true}
 /* ---------- aba A árvore ---------- */
 function renderAbout(){
   const g=$("aboutTree");g.innerHTML="";
-  g.appendChild(el("div",{class:"tree",html:treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera")}));
-  PILARES.forEach(p=>{
-    const s=SOBRE[p.k];
-    g.appendChild(el("div",{class:"anno a-"+p.k,style:pv(p.k)},[
-      el("span",{class:"k",text:p.nome+" = "+p.sub}),
+  g.appendChild(el("div",{class:"tree",html:treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera, da raiz aos frutos",true)}));
+  const passos=[
+    ["frutos",4,"a copa produz os frutos"],
+    ["copa",3,"o tronco leva força para a copa"],
+    ["tronco",2,"a raiz sustenta o tronco"],
+    ["raiz",1,null]
+  ];
+  const flow=el("div",{class:"flow"});
+  passos.forEach(([k,n,seta])=>{
+    const p=PILARES.find(x=>x.k===k),s=SOBRE[k];
+    flow.appendChild(el("div",{class:"flowstep",style:pv(k)},[
+      el("span",{class:"num",text:String(n)}),
+      el("span",{class:"k",text:p.nome+" ("+p.sub+")"}),
       el("span",{text:s.desc}),
       el("span",{class:"small muted",text:"Exemplos: "+s.ex})
     ]));
+    if(seta)flow.appendChild(el("div",{class:"flowarrow"},[el("b",{text:"↑"}),seta]));
   });
+  flow.appendChild(el("p",{class:"small muted",style:"padding-left:4px",text:"Leia de baixo para cima: tudo começa na raiz e termina nos frutos."}));
+  g.appendChild(flow);
 }
 
 /* ---------- aba Minhas metas ---------- */
