@@ -201,7 +201,7 @@ textarea{min-height:72px;resize:vertical}
     <div class="tree" id="authTree"></div>
     <div style="display:grid;gap:12px">
       <h2>Bem-vindo à Família Prospera</h2>
-      <p>Um lugar para cada pessoa da família cultivar a sua árvore: raiz (espírito), tronco (corpo), copa (mente) e frutos (prosperidade), com metas pequenas a cada trimestre.</p>
+      <p>Um lugar para cada pessoa da família cultivar a sua árvore: raiz (espírito), tronco (mente), copa (corpo) e frutos (prosperidade), com metas pequenas a cada trimestre.</p>
       <div class="famgrid">
         <div class="fambox">
           <h3>Criar a família</h3>
@@ -354,22 +354,23 @@ textarea{min-height:72px;resize:vertical}
 import cfg from "./supabase-config.js";
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm";
 const PILARES=[
-  {k:"raiz",nome:"Raiz",sub:"Espírito",perg:"O que me dá sentido e paz?"},
-  {k:"tronco",nome:"Tronco",sub:"Corpo",perg:"O que me dá energia e saúde?"},
-  {k:"copa",nome:"Copa",sub:"Mente",perg:"O que me faz crescer e me conectar?"},
-  {k:"frutos",nome:"Frutos",sub:"Prosperidade",perg:"O que estou colhendo e construindo?"}
+  {k:"espirito",part:"raiz",nome:"Raiz",sub:"Espírito",perg:"O que me dá sentido e paz?"},
+  {k:"mente",part:"tronco",nome:"Tronco",sub:"Mente",perg:"O que me faz crescer e decidir bem?"},
+  {k:"corpo",part:"copa",nome:"Copa",sub:"Corpo",perg:"O que me dá energia e saúde?"},
+  {k:"prosperidade",part:"frutos",nome:"Frutos",sub:"Prosperidade",perg:"O que estou colhendo e construindo?"}
 ];
+const MIGRA={raiz:"espirito",tronco:"corpo",copa:"mente",frutos:"prosperidade"};
 const SOBRE={
-  raiz:{desc:"Fé, valores, gratidão e propósito. É o que sustenta a árvore, mesmo sem aparecer.",imp:"Quem cultiva a vida espiritual tem menos depressão, mais sentido na vida e vive mais. Praticar com outras pessoas, como na igreja, parece ter efeito ainda maior (Harvard, Global Flourishing Study).",ex:"Oração, meditação, igreja, mantra, gratidão, perdão, generosidade."},
-  tronco:{desc:"Movimento, força, sono e alimentação. É o que dá energia e saúde para todo o resto.",imp:"150 minutos de atividade por semana, um pouco de musculação, 7 horas de sono e comida de verdade são os maiores protetores da saúde e do humor (OMS, Academia Americana do Sono).",ex:"Caminhada, musculação, passos, dormir 7 horas, cozinhar em casa."},
-  copa:{desc:"Aprender, ler, se relacionar e se organizar. É o que cresce, recebe a luz e decide para onde ir.",imp:"Boas relações são o maior fator de felicidade e saúde, e aprender algo novo e desafiador protege a memória e o cérebro (Estudo de Harvard, Lancet).",ex:"Leitura, aprender algo novo, menos tela, foco, boas conversas."},
-  frutos:{desc:"Dinheiro bem cuidado, reserva, sonhos, experiências e generosidade. É o resultado dos outros três.",imp:"Ter reserva de emergência e sair das dívidas caras reduz muito o estresse. Gastar com experiências e com os outros traz mais felicidade do que comprar coisas.",ex:"Orçamento, reserva, quitar dívidas, poupar, sonhos, doações."}
+  espirito:{desc:"Fé, valores, gratidão e propósito. É o que sustenta a árvore, mesmo sem aparecer.",imp:"Quem cultiva a vida espiritual tem menos depressão, mais sentido na vida e vive mais. Praticar com outras pessoas, como na igreja, parece ter efeito ainda maior (Harvard, Global Flourishing Study).",ex:"Oração, meditação, igreja, mantra, gratidão, perdão, generosidade."},
+  corpo:{desc:"Movimento, força, sono e alimentação. É a copa: a parte viva e visível da árvore, que capta energia como as folhas captam a luz.",imp:"150 minutos de atividade por semana, um pouco de musculação, 7 horas de sono e comida de verdade são os maiores protetores da saúde e do humor (OMS, Academia Americana do Sono).",ex:"Caminhada, musculação, passos, dormir 7 horas, cozinhar em casa."},
+  mente:{desc:"Aprender, ler, se relacionar e se organizar. É o tronco: o eixo que dá direção, onde nascem as decisões e os hábitos.",imp:"Boas relações são o maior fator de felicidade e saúde, e aprender algo novo e desafiador protege a memória e o cérebro (Estudo de Harvard, Lancet).",ex:"Leitura, aprender algo novo, menos tela, foco, boas conversas."},
+  prosperidade:{desc:"Dinheiro bem cuidado, reserva, sonhos, experiências e generosidade. É o resultado dos outros três.",imp:"Ter reserva de emergência e sair das dívidas caras reduz muito o estresse. Gastar com experiências e com os outros traz mais felicidade do que comprar coisas.",ex:"Orçamento, reserva, quitar dívidas, poupar, sonhos, doações."}
 };
 const IDEIAS={
-  raiz:[["Criar o hábito de meditar","Meditar 10 min ao acordar",5],["Fortalecer a oração","Rezar ao acordar e ao deitar",7],["Frequentar a comunidade de fé","Ir à missa, culto ou centro",1],["Praticar mantra ou louvor","10 min de mantra ou louvor",4],["Praticar a gratidão","Anotar 3 coisas boas do dia",7],["Ser mais generoso","Fazer 1 ato de generosidade",1],["Conectar com a natureza","Caminhar olhando o que encanta",1]],
-  tronco:[["Chegar a 150 min de atividade por semana","Caminhar 30 min depois do jantar",5],["Começar a musculação","Treino de força de 30 min",2],["Dormir 7 horas","Deitar até 23h, sem celular no quarto",7],["Comer comida de verdade","Cozinhar em casa no jantar",4],["Beber menos álcool","Ficar o dia sem álcool",5],["Cuidar da respiração","5 min de respiração lenta",7]],
-  copa:[["Ler 3 livros","Ler 20 páginas antes de dormir",7],["Aprender algo novo","Praticar idioma, instrumento ou curso",3],["Usar menos redes sociais","Ficar até 30 min nas redes",7],["Ter mais foco","1 bloco de 60 min sem celular",5],["Cuidar das amizades","Ligar ou encontrar alguém importante",1],["Organizar a semana","20 min de planejamento",1],["Escrever um diário","10 min de diário à noite",5]],
-  frutos:[["Conhecer meus gastos","Registrar todos os gastos do dia",7],["Montar a reserva de emergência","Transferir o valor combinado para a reserva",1],["Quitar uma dívida cara","Separar o valor da parcela extra",1],["Nunca usar o rotativo","Conferir o saldo para pagar a fatura inteira",1],["Juntar para um sonho","Guardar o valor do sonho",1],["Aprender sobre finanças","Estudar finanças 20 min",2],["Doar com regularidade","Fazer uma doação ou ajudar alguém",1]]
+  espirito:[["Criar o hábito de meditar","Meditar 10 min ao acordar",5],["Fortalecer a oração","Rezar ao acordar e ao deitar",7],["Frequentar a comunidade de fé","Ir à missa, culto ou centro",1],["Praticar mantra ou louvor","10 min de mantra ou louvor",4],["Praticar a gratidão","Anotar 3 coisas boas do dia",7],["Ser mais generoso","Fazer 1 ato de generosidade",1],["Conectar com a natureza","Caminhar olhando o que encanta",1]],
+  corpo:[["Chegar a 150 min de atividade por semana","Caminhar 30 min depois do jantar",5],["Começar a musculação","Treino de força de 30 min",2],["Dormir 7 horas","Deitar até 23h, sem celular no quarto",7],["Comer comida de verdade","Cozinhar em casa no jantar",4],["Beber menos álcool","Ficar o dia sem álcool",5],["Cuidar da respiração","5 min de respiração lenta",7]],
+  mente:[["Ler 3 livros","Ler 20 páginas antes de dormir",7],["Aprender algo novo","Praticar idioma, instrumento ou curso",3],["Usar menos redes sociais","Ficar até 30 min nas redes",7],["Ter mais foco","1 bloco de 60 min sem celular",5],["Cuidar das amizades","Ligar ou encontrar alguém importante",1],["Organizar a semana","20 min de planejamento",1],["Escrever um diário","10 min de diário à noite",5]],
+  prosperidade:[["Conhecer meus gastos","Registrar todos os gastos do dia",7],["Montar a reserva de emergência","Transferir o valor combinado para a reserva",1],["Quitar uma dívida cara","Separar o valor da parcela extra",1],["Nunca usar o rotativo","Conferir o saldo para pagar a fatura inteira",1],["Juntar para um sonho","Guardar o valor do sonho",1],["Aprender sobre finanças","Estudar finanças 20 min",2],["Doar com regularidade","Fazer uma doação ou ajudar alguém",1]]
 };
 const ICONS={
   raiz:'<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="13" y="2" width="6" height="12" rx="2" fill="var(--tronco)" opacity=".5"/><path d="M16 13 C14 20 9 22 4 27 M16 13 C16 21 16 25 16 30 M16 13 C18 20 23 22 28 27 M16 18 C12 22 10 24 9 30 M16 18 C20 22 22 24 23 30" stroke="var(--raiz)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>',
@@ -425,8 +426,8 @@ function treeSVG(pr,label,legendas){
   if(legendas){
     const L=[
       ["Frutos (Prosperidade)","#c95f16",154,86,122,16,"start"],
-      ["Copa (Mente)","#2f7440",70,104,40,56,"end"],
-      ["Tronco (Corpo)","#6b4428",127,184,150,176,"start"],
+      ["Copa (Corpo)","#2f7440",70,104,40,56,"end"],
+      ["Tronco (Mente)","#6b4428",127,184,150,176,"start"],
       ["Raiz (Espírito)","#5d4290",96,262,80,258,"end"]
     ];
     L.forEach(l=>{
@@ -472,10 +473,11 @@ function progress(k){
   let s=0;ws.forEach(m=>{s+=Math.min(weekCount(k,m),alvo)/alvo});
   return Math.round(100*s/ws.length);
 }
-function myProgress(){const o={};PILARES.forEach(p=>o[p.k]=progress(p.k));return o}
+function myProgress(){const o={};PILARES.forEach(p=>o[p.part]=progress(p.k));return o}
 
 /* ---------- persistência (Supabase, sem login) ---------- */
-function normalize(d){const p=emptyPlan();if(d&&typeof d==="object"){["metas","checkins","semanas","colheita"].forEach(f=>{if(d[f]&&typeof d[f]==="object")p[f]=JSON.parse(JSON.stringify(d[f]))})}return p}
+function migraKeys(o){if(!o||typeof o!=="object")return o;const r={};Object.keys(o).forEach(k=>{r[MIGRA[k]||k]=o[k]});return r}
+function normalize(d){const p=emptyPlan();if(d&&typeof d==="object"){["metas","checkins","semanas","colheita"].forEach(f=>{if(d[f]&&typeof d[f]==="object")p[f]=JSON.parse(JSON.stringify(d[f]))})}p.metas=migraKeys(p.metas);p.checkins=migraKeys(p.checkins);return p}
 function setStatus(t){$("saveStatus").textContent=t}
 function scheduleSave(){dirty=true;setStatus("Salvando…");clearTimeout(saveTimer);saveTimer=setTimeout(doSave,800)}
 function saveNow(){dirty=true;clearTimeout(saveTimer);setStatus("Salvando…");doSave()}
@@ -549,15 +551,15 @@ function renderAbout(){
   const g=$("aboutTree");g.innerHTML="";
   g.appendChild(el("div",{class:"tree",html:treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera, da raiz aos frutos",true)}));
   const passos=[
-    ["frutos",4,"a copa produz os frutos"],
-    ["copa",3,"o tronco leva força para a copa"],
-    ["tronco",2,"a raiz sustenta o tronco"],
-    ["raiz",1,null]
+    ["prosperidade",4,"a copa (corpo) cheia de energia produz os frutos"],
+    ["corpo",3,"o tronco (mente) dá direção e sustenta a copa"],
+    ["mente",2,"a raiz (espírito) sustenta o tronco"],
+    ["espirito",1,null]
   ];
   const flow=el("div",{class:"flow"});
   passos.forEach(([k,n,seta])=>{
     const p=PILARES.find(x=>x.k===k),s=SOBRE[k];
-    flow.appendChild(el("div",{class:"flowstep",style:pv(k)},[
+    flow.appendChild(el("div",{class:"flowstep",style:pv(p.part)},[
       el("span",{class:"num",text:String(n)}),
       el("span",{class:"k",text:p.nome+" ("+p.sub+")"}),
       el("span",{text:s.desc}),
@@ -581,7 +583,7 @@ function pilarCard(p){
   const k=p.k,s=SOBRE[k];
   const pr=progress(k);
   const kids=[
-    el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[k]}),el("div",{},[el("h3",{text:p.nome+" · "+p.sub}),el("span",{class:"small muted",text:p.perg})])]),
+    el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.part]}),el("div",{},[el("h3",{text:p.sub+" · "+p.nome}),el("span",{class:"small muted",text:p.perg})])]),
     el("p",{class:"desc",text:s.desc}),
     el("p",{class:"imp"},[el("b",{text:"Por que importa: "}),s.imp])
   ];
@@ -592,7 +594,7 @@ function pilarCard(p){
     b.addEventListener("click",()=>startEdit(k));
     kids.push(el("div",{class:"row"},[b]));
   }
-  return el("div",{class:"card pcard",style:pv(k)},kids);
+  return el("div",{class:"card pcard",style:pv(p.part)},kids);
 }
 function startEdit(k){
   drafts[k]=Object.assign({meta:"",acao:"",vezes:3,seEntao:"",compartilhar:false},goalOf(k));
@@ -679,8 +681,8 @@ function renderCheckin(){
       b.addEventListener("click",()=>{const c=plan.checkins[p.k]||(plan.checkins[p.k]={});if(c[key])delete c[key];else c[key]=true;scheduleSave();renderCheckin();renderMyTree()});
       days.appendChild(b);
     }
-    rows.appendChild(el("div",{class:"card pcard",style:pv(p.k)},[
-      el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.k]}),el("div",{},[el("h3",{text:g.acao||g.meta}),el("span",{class:"pill "+(n>=alvo?"ok":"no"),text:n+" de "+alvo+" nesta semana"})])]),
+    rows.appendChild(el("div",{class:"card pcard",style:pv(p.part)},[
+      el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.part]}),el("div",{},[el("h3",{text:g.acao||g.meta}),el("span",{class:"pill "+(n>=alvo?"ok":"no"),text:n+" de "+alvo+" nesta semana"})])]),
       g.seEntao?el("p",{class:"muted small",text:"Plano B: "+g.seEntao}):null,
       days
     ]));
@@ -700,19 +702,19 @@ function renderMural(){
   order.forEach(i=>{
     const q=((muralDocs[i]||{}).quarters||{})[quarter]||{metas:[],colheita:null};
     const nome=i===uid?"Sua árvore":(String((muralDocs[i]||{}).nome||"").split(" ")[0]||"Alguém da família");
-    const metas={};(q.metas||[]).forEach(m=>{if(m&&m.pilar)metas[m.pilar]=m});
-    const pr={};PILARES.forEach(p=>{pr[p.k]=metas[p.k]?(+metas[p.k].progresso||0):null});
+    const metas={};(q.metas||[]).forEach(m=>{if(m&&m.pilar)metas[MIGRA[m.pilar]||m.pilar]=m});
+    const pr={};PILARES.forEach(p=>{pr[p.part]=metas[p.k]?(+metas[p.k].progresso||0):null});
     const grid=el("div",{class:"treegrid"});
     grid.appendChild(el("div",{class:"tree",html:treeSVG(pr,"Árvore de "+nome)}));
     PILARES.forEach(p=>{
       const m=metas[p.k];
-      grid.appendChild(el("div",{class:"anno a-"+p.k,style:pv(p.k)},m?[
-        el("span",{class:"k",text:p.nome+" · "+p.sub}),
+      grid.appendChild(el("div",{class:"anno a-"+p.part,style:pv(p.part)},m?[
+        el("span",{class:"k",text:p.sub+" · "+p.nome}),
         el("span",{class:"t",text:String(m.meta||m.acao||"")}),
         m.acao?el("span",{class:"small",text:String(m.acao)+" · "+(+m.vezes||1)+"x por semana"}):null,
         pctRow(m.progresso)
       ]:[
-        el("span",{class:"k",text:p.nome+" · "+p.sub}),
+        el("span",{class:"k",text:p.sub+" · "+p.nome}),
         el("span",{class:"small muted",text:"Meta não compartilhada"})
       ]));
     });
