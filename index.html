@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Família Prospera</title>
+<meta name="theme-color" content="#2f6b45">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Família Prospera">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap" rel="stylesheet">
+<style>
+/* Layout: uma árvore ilustrada é o fio condutor. Abas: A árvore (explicação), Minhas metas, Check-in, Mural (uma árvore por pessoa). */
+:root{
+  --bg:#f4f1ea; --sky:#e4efe6; --card:#fffdf8; --ink:#22251f; --muted:#646a5d; --line:#ddd6c8; --accent:#2f6b45;
+  --raiz:#7a5aa6; --tronco:#8a5a35; --copa:#3c8a4f; --frutos:#d97a22;
+  --raiz-soft:#efe9f6; --tronco-soft:#f3e9df; --copa-soft:#e5f2e7; --frutos-soft:#fbeedd;
+  --ok:#2f7d46; --warn:#b4581a; --soil:#cdbfa8;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:920px;margin:0 auto;padding:18px 16px 64px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.12}
+h1{font-size:2rem;font-weight:800}
+h2{font-size:1.5rem;font-weight:800}
+h3{font-size:1.12rem;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+a{color:var(--accent)}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:10px;align-items:center}
+.brand svg{width:44px;height:44px}
+.who{color:var(--muted);font-size:.92rem}
+.quarter{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.quarter button{border:0;background:transparent;color:var(--ink);font-size:1.15rem;width:34px;height:34px;border-radius:50%;cursor:pointer}
+.quarter button:hover{background:var(--bg)}
+.quarter span{font-weight:700;min-width:186px;text-align:center;font-size:.92rem;font-variant-numeric:tabular-nums}
+.banner{border:1px solid var(--line);background:var(--card);border-left:4px solid var(--warn);padding:10px 14px;border-radius:8px;font-size:.92rem}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px}
+nav.tabs button{flex:1 1 auto;font:inherit;font-weight:700;font-size:.93rem;background:transparent;border:0;border-radius:10px;padding:10px 12px;color:var(--muted);cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--card)}
+section.view{display:grid;gap:18px}
+section.view[hidden]{display:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
+.btn{font:inherit;font-weight:700;font-size:.92rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--card);border-color:var(--accent)}
+.btn.big{padding:12px 18px;font-size:1rem}
+.btn.danger{color:var(--warn)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Árvore anotada */
+.scene{background:radial-gradient(circle at 85% 12%,#fff6d8 0,#fff6d8 34px,transparent 90px),linear-gradient(180deg,#dfeef3 0%,#e9f3ea 62%,#f4f1ea 100%);border:1px solid var(--line);border-radius:20px;padding:20px 16px}
+.treegrid{display:grid;grid-template-columns:1fr minmax(200px,280px) 1fr;grid-template-areas:"copa tree frutos" "tronco tree raiz";gap:14px 18px;align-items:center}
+.treegrid .tree{grid-area:tree}
+.treegrid .a-copa{grid-area:copa}
+.treegrid .a-frutos{grid-area:frutos}
+.treegrid .a-tronco{grid-area:tronco}
+.treegrid .a-raiz{grid-area:raiz}
+.tree svg{width:100%;height:auto;display:block}
+.anno{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:12px 14px;display:grid;gap:4px}
+.anno .k{font-family:var(--display);font-weight:800;color:var(--c);font-size:1rem}
+.anno .t{font-weight:700}
+.bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--c);border-radius:99px}
+.pctrow{display:flex;gap:8px;align-items:center}
+.pctrow .bar{flex:1}
+.pctrow span{font-size:.82rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+
+.lead{font-size:1.08rem;max-width:62ch}
+.quote{font-family:var(--display);font-size:1.25rem;font-weight:700;color:var(--accent);max-width:40ch}
+.cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:8px;justify-items:start}
+.step svg{width:52px;height:52px}
+.step .n{font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.howto{display:grid;gap:10px;counter-reset:s}
+.howto li{list-style:none;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.howto li::before{counter-increment:s;content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--card);display:grid;place-items:center;font-weight:800;font-family:var(--display)}
+.howto{padding:0;margin:0}
+
+/* Minhas metas */
+.mine{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:18px;align-items:center}
+.mine .tree{max-width:220px}
+.pcard{border-top:6px solid var(--c)}
+.phead{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center}
+.picon{width:52px;height:52px;border-radius:50%;background:var(--soft);display:grid;place-items:center}
+.picon svg{width:32px;height:32px}
+.phead h3{color:var(--c)}
+.desc{font-size:.97rem}
+.imp{font-size:.9rem;background:var(--soft);border-radius:10px;padding:10px 12px}
+.goalbox,.formbox{display:grid;gap:9px;padding:14px;border-radius:12px;border:1.5px dashed var(--c);background:var(--bg)}
+.goalbox{border-style:solid}
+.goalbox .t{font-family:var(--display);font-weight:700;font-size:1.12rem}
+.tag{justify-self:start;font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--card)}
+.field{display:grid;gap:4px}
+label{font-weight:700;font-size:.9rem}
+input[type=text],textarea,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%}
+textarea{min-height:72px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row .grow{flex:1 1 220px}
+.check{display:flex;gap:8px;align-items:center;font-weight:600;font-size:.92rem}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.ideas{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.85rem;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--c)}
+.err{color:var(--warn);font-size:.88rem;font-weight:700}
+.err:empty{display:none}
+.status{font-size:.86rem;color:var(--muted)}
+
+/* Check-in */
+.weeknav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.days{display:grid;grid-template-columns:repeat(7,minmax(38px,1fr));gap:6px}
+.day{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:6px 0;cursor:pointer;display:grid;justify-items:center;font-size:.8rem}
+.day b{font-size:1rem;font-variant-numeric:tabular-nums}
+.day[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--card)}
+.day:disabled{opacity:.4;cursor:not-allowed}
+.pill{display:inline-block;font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.pill.no{color:var(--muted)}
+.empty{text-align:center;padding:26px 16px;color:var(--muted);justify-items:center}
+
+/* Mural */
+.forest{display:grid;gap:18px}
+.person h3{font-size:1.25rem}
+.person .harvest{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;display:grid;gap:4px;font-size:.92rem}
+
+@media (max-width:700px){
+  .treegrid{grid-template-columns:1fr;grid-template-areas:"tree" "copa" "frutos" "tronco" "raiz"}
+  .treegrid .tree{max-width:240px;justify-self:center;width:100%}
+  .cycle{grid-template-columns:1fr}
+  .mine{grid-template-columns:1fr}
+  .mine .tree{justify-self:center;width:180px}
+  h1{font-size:1.6rem}
+  .quarter span{min-width:150px;font-size:.85rem}
+}
+@media (prefers-reduced-motion: no-preference){
+  .bar i{transition:width .4s ease}
+}
+.authbox{display:grid;grid-template-columns:minmax(160px,240px) 1fr;gap:20px;align-items:center}
+.authbox .tree{max-width:240px}
+.google{display:inline-flex;gap:10px;align-items:center;background:#fff;color:#1f1f1f;border:1px solid #c9c9c9;border-radius:10px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer}
+.google:hover{border-color:var(--accent)}
+.famgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fambox{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;background:var(--bg)}
+.hright{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fampill{font-size:.85rem;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.code{font-family:var(--display);font-weight:800;letter-spacing:.12em;font-size:1.3rem;color:var(--accent)}
+@media (max-width:700px){.authbox{grid-template-columns:1fr}.authbox .tree{justify-self:center;width:180px}.famgrid{grid-template-columns:1fr}}
+#app[hidden]{display:none!important}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="18" r="13" fill="var(--copa)"/><circle cx="18" cy="16" r="3" fill="var(--frutos)"/><circle cx="29" cy="21" r="3" fill="var(--frutos)"/><rect x="21.5" y="26" width="5" height="14" rx="2" fill="var(--tronco)"/><path d="M24 40 L16 46 M24 40 L24 47 M24 40 L32 46" stroke="var(--raiz)" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div>
+        <h1>Família Prospera</h1>
+        <p class="who" id="who">Cada um cultiva a sua árvore</p>
+      </div>
+    </div>
+    <div class="hright">
+    <span class="fampill" id="famPill" hidden></span>
+    <button type="button" class="btn" id="btnTrocar" hidden>Trocar pessoa</button>
+    <div class="quarter" aria-label="Trimestre" id="quarterBox" hidden>
+      <button type="button" id="qPrev" aria-label="Trimestre anterior">‹</button>
+      <span id="qLabel">—</span>
+      <button type="button" id="qNext" aria-label="Próximo trimestre">›</button>
+    </div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <section class="card" id="cfgBox" hidden>
+    <h2>Falta configurar o Supabase</h2>
+    <p>Abra o arquivo <b>supabase-config.js</b> e cole o endereço e a chave pública do seu projeto Supabase, como explica o LEIA-ME.</p>
+  </section>
+
+  <section class="card scene authbox" id="welcomeBox" hidden>
+    <div class="tree" id="authTree"></div>
+    <div style="display:grid;gap:12px">
+      <h2>Bem-vindo à Família Prospera</h2>
+      <p>Um lugar para cada pessoa da família cultivar a sua árvore: raiz (espírito), tronco (corpo), copa (mente) e frutos (prosperidade), com metas pequenas a cada trimestre.</p>
+      <div class="famgrid">
+        <div class="fambox">
+          <h3>Criar a família</h3>
+          <div class="field"><label for="famNome">Nome da família</label><input type="text" id="famNome" placeholder="Ex.: Família Silva"></div>
+          <button type="button" class="btn primary" id="btnCriar">Criar família</button>
+        </div>
+        <div class="fambox">
+          <h3>Recebi um código</h3>
+          <div class="field"><label for="famCodigo">Código da família</label><input type="text" id="famCodigo" placeholder="Ex.: K7P2QX" autocapitalize="characters"></div>
+          <button type="button" class="btn primary" id="btnEntrar">Entrar</button>
+        </div>
+      </div>
+      <p class="err" id="famErr"></p>
+    </div>
+  </section>
+
+  <section class="card" id="whoBox" hidden>
+    <h2>Quem é você?</h2>
+    <p class="muted" id="whoFam"></p>
+    <div class="ideas" id="whoList"></div>
+    <div class="fambox">
+      <h3>Sou novo aqui</h3>
+      <div class="field"><label for="novoNome">Seu nome</label><input type="text" id="novoNome" placeholder="Ex.: Maria"></div>
+      <button type="button" class="btn primary" id="btnNovo">Criar minha árvore</button>
+    </div>
+    <p class="err" id="whoErr"></p>
+  </section>
+
+  <div id="app" hidden style="display:grid;gap:22px">
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" id="tab-arvore" aria-selected="true">A árvore</button>
+    <button type="button" role="tab" id="tab-metas" aria-selected="false">Minhas metas</button>
+    <button type="button" role="tab" id="tab-checkin" aria-selected="false">Check-in</button>
+    <button type="button" role="tab" id="tab-mural" aria-selected="false">Mural da família</button>
+  </nav>
+
+  <!-- A ÁRVORE -->
+  <section class="view" id="view-arvore">
+    <div class="card">
+      <h2>Prosperidade é uma árvore que a gente cultiva</h2>
+      <p class="lead">Cada pessoa da família cuida da sua própria árvore. Quando a raiz, o tronco e a copa estão fortes, os frutos aparecem. Toda meta que você criar aqui cuida de uma dessas partes.</p>
+    </div>
+    <div class="scene">
+      <div class="treegrid" id="aboutTree"></div>
+    </div>
+    <div class="card">
+      <p class="quote">Prosperidade é o fruto de quem cultiva mente, corpo e espírito com constância.</p>
+    </div>
+    <div class="card">
+      <h2>O ciclo de cada trimestre</h2>
+      <p class="muted">O ano tem 4 ciclos de 3 meses, como as estações.</p>
+      <div class="cycle">
+        <div class="step">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="42" rx="20" ry="5" fill="var(--soil)"/><path d="M26 40 C26 30 26 26 26 22" stroke="var(--copa)" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M26 28 C18 28 15 22 15 18 C21 18 26 22 26 28Z" fill="var(--copa)"/><path d="M26 24 C33 24 37 18 37 13 C30 13 26 18 26 24Z" fill="var(--copa)"/></svg>
+          <span class="n">1 · Plantar</span>
+          <h3>Escolha suas metas</h3>
+          <p class="small">No início do trimestre, crie até uma meta para cada parte da árvore.</p>
+        </div>
+        <div class="step">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 22 H30 V38 H8 Z" fill="var(--accent)" opacity=".85"/><path d="M30 26 L44 16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M14 22 C14 14 24 14 24 22" stroke="var(--accent)" stroke-width="3" fill="none"/><circle cx="44" cy="22" r="2" fill="var(--sky)" stroke="var(--copa)"/><circle cx="47" cy="28" r="2" fill="var(--sky)" stroke="var(--copa)"/><circle cx="42" cy="31" r="2" fill="var(--sky)" stroke="var(--copa)"/></svg>
+          <span class="n">2 · Cultivar</span>
+          <h3>Regue toda semana</h3>
+          <p class="small">Marque no check-in os dias em que cumpriu cada compromisso. Leva 5 minutos.</p>
+        </div>
+        <div class="step">
+          <svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 26 H44 L39 44 H13 Z" fill="var(--tronco)"/><path d="M14 26 C14 12 38 12 38 26" stroke="var(--tronco)" stroke-width="3" fill="none"/><circle cx="19" cy="24" r="5" fill="var(--frutos)"/><circle cx="28" cy="22" r="5" fill="var(--frutos)"/><circle cx="35" cy="25" r="4.5" fill="var(--frutos)"/></svg>
+          <span class="n">3 · Colher</span>
+          <h3>Celebre o que cresceu</h3>
+          <p class="small">No fim do trimestre, anote o que colheu e aprendeu, e celebre com a família.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Como usar a plataforma</h2>
+      <ol class="howto">
+        <li><div><b>Crie suas metas</b> na aba Minhas metas: uma para cada parte da árvore, no formato "eu vou [ação], [quantas vezes] por semana".</div></li>
+        <li><div><b>Faça o check-in</b> toda semana. Sua árvore fica mais forte a cada compromisso cumprido.</div></li>
+        <li><div><b>Escolha o que mostrar</b> no Mural da família. No mural aparecem só as metas que você marcar.</div></li>
+      </ol>
+      <div class="row"><button type="button" class="btn primary big" id="goMetas">Vamos criar suas metas →</button></div>
+    </div>
+  </section>
+
+  <!-- MINHAS METAS -->
+  <section class="view" id="view-metas" hidden>
+    <div class="card scene mine">
+      <div class="tree" id="myTree"></div>
+      <div style="display:grid;gap:8px">
+        <h2>Vamos criar suas metas</h2>
+        <p>Escolha até uma meta para cada parte da sua árvore. Toque em <b>Cadastrar meta</b>, preencha os 4 passos e toque em <b>Salvar meta</b>.</p>
+        <p class="small muted">Sua árvore ganha cor e frutos conforme você cumpre os compromissos no check-in. No mural aparecem só as metas que você marcar.</p>
+      </div>
+    </div>
+    <div id="pcards" style="display:grid;gap:16px"></div>
+    <div class="card" id="colheita">
+      <div class="phead">
+        <div class="picon" style="--soft:var(--frutos-soft)"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14 H28 L25 28 H7 Z" fill="var(--tronco)"/><circle cx="11" cy="12" r="4" fill="var(--frutos)"/><circle cx="18" cy="11" r="4" fill="var(--frutos)"/><circle cx="24" cy="13" r="3.5" fill="var(--frutos)"/></svg></div>
+        <div><h3>Colheita do trimestre</h3><p class="small muted">Preencha no fim do trimestre. Serve de base para plantar o próximo ciclo.</p></div>
+      </div>
+      <div class="field"><label for="c-colhi">O que eu colhi</label><textarea id="c-colhi" placeholder="Ex.: meditei em 80% dos dias e completei a reserva de um mês"></textarea></div>
+      <div class="field"><label for="c-aprendi">O que eu aprendi</label><textarea id="c-aprendi" placeholder="Ex.: caminhar à noite funciona melhor que de manhã"></textarea></div>
+      <div class="field"><label for="c-plantar">O que vou plantar no próximo trimestre</label><textarea id="c-plantar" placeholder="Ex.: manter a meditação e começar a musculação"></textarea></div>
+      <label class="check"><input type="checkbox" id="c-share"> Mostrar minha colheita no mural da família</label>
+      <div class="row"><button type="button" class="btn primary" id="c-save">Salvar colheita</button></div>
+    </div>
+    <p class="status" id="saveStatus" aria-live="polite"></p>
+  </section>
+
+  <!-- CHECK-IN -->
+  <section class="view" id="view-checkin" hidden>
+    <div class="card">
+      <div class="weeknav">
+        <button type="button" class="btn" id="wPrev">‹ Anterior</button>
+        <h3 id="wLabel">—</h3>
+        <button type="button" class="btn" id="wNext">Próxima ›</button>
+      </div>
+      <p class="muted small">Toque nos dias em que você cumpriu cada compromisso. É a rega da sua árvore.</p>
+    </div>
+    <div id="checkRows" style="display:grid;gap:12px"></div>
+    <div class="card">
+      <h3>Reflexão da semana</h3>
+      <div class="field"><label for="r-ajudou">O que me ajudou?</label><textarea id="r-ajudou" placeholder="Ex.: deixar o tênis separado na noite anterior"></textarea></div>
+      <div class="field"><label for="r-atrapalhou">O que atrapalhou?</label><textarea id="r-atrapalhou" placeholder="Ex.: chegar tarde do trabalho na quarta"></textarea></div>
+      <div class="field"><label for="r-ajuste">Ajuste para a próxima semana</label><input type="text" id="r-ajuste" placeholder="Ex.: caminhar no almoço às quartas"></div>
+    </div>
+  </section>
+
+  <!-- MURAL -->
+  <section class="view" id="view-mural" hidden>
+    <div class="card">
+      <h2>O pomar da família</h2>
+      <p>Cada pessoa tem a sua árvore. Aqui aparecem as metas do trimestre que cada um escolheu mostrar e quanto cada parte já cresceu. O mural serve para apoiar e celebrar, não para cobrar.</p>
+    </div>
+    <div class="card" id="inviteCard">
+      <h3>Convide sua família</h3>
+      <p>Mande o link da família no WhatsApp. Cada pessoa abre, toca em "Sou novo aqui" e escreve o nome. Não precisa de conta nem senha.</p>
+      <p>Código da família: <span class="code" id="famCode">—</span></p>
+      <p class="small muted" id="famLink"></p>
+      <div class="row"><button type="button" class="btn" id="btnCopiar">Copiar convite com o link</button><span class="small muted" id="copyMsg"></span></div>
+    </div>
+    <div class="forest" id="mural"></div>
+  </section>
+  </div>
+</div>
+
+<script type="module">
+import cfg from "./supabase-config.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm";
+const PILARES=[
+  {k:"raiz",nome:"Raiz",sub:"Espírito",perg:"O que me dá sentido e paz?"},
+  {k:"tronco",nome:"Tronco",sub:"Corpo",perg:"O que me dá energia e saúde?"},
+  {k:"copa",nome:"Copa",sub:"Mente",perg:"O que me faz crescer e me conectar?"},
+  {k:"frutos",nome:"Frutos",sub:"Prosperidade",perg:"O que estou colhendo e construindo?"}
+];
+const SOBRE={
+  raiz:{desc:"Fé, valores, gratidão e propósito. É o que sustenta a árvore, mesmo sem aparecer.",imp:"Quem cultiva a vida espiritual tem menos depressão, mais sentido na vida e vive mais. Praticar com outras pessoas, como na igreja, parece ter efeito ainda maior (Harvard, Global Flourishing Study).",ex:"Oração, meditação, igreja, mantra, gratidão, perdão, generosidade."},
+  tronco:{desc:"Movimento, força, sono e alimentação. É o que dá energia e saúde para todo o resto.",imp:"150 minutos de atividade por semana, um pouco de musculação, 7 horas de sono e comida de verdade são os maiores protetores da saúde e do humor (OMS, Academia Americana do Sono).",ex:"Caminhada, musculação, passos, dormir 7 horas, cozinhar em casa."},
+  copa:{desc:"Aprender, ler, se relacionar e se organizar. É o que cresce, recebe a luz e decide para onde ir.",imp:"Boas relações são o maior fator de felicidade e saúde, e aprender algo novo e desafiador protege a memória e o cérebro (Estudo de Harvard, Lancet).",ex:"Leitura, aprender algo novo, menos tela, foco, boas conversas."},
+  frutos:{desc:"Dinheiro bem cuidado, reserva, sonhos, experiências e generosidade. É o resultado dos outros três.",imp:"Ter reserva de emergência e sair das dívidas caras reduz muito o estresse. Gastar com experiências e com os outros traz mais felicidade do que comprar coisas.",ex:"Orçamento, reserva, quitar dívidas, poupar, sonhos, doações."}
+};
+const IDEIAS={
+  raiz:[["Criar o hábito de meditar","Meditar 10 min ao acordar",5],["Fortalecer a oração","Rezar ao acordar e ao deitar",7],["Frequentar a comunidade de fé","Ir à missa, culto ou centro",1],["Praticar mantra ou louvor","10 min de mantra ou louvor",4],["Praticar a gratidão","Anotar 3 coisas boas do dia",7],["Ser mais generoso","Fazer 1 ato de generosidade",1],["Conectar com a natureza","Caminhar olhando o que encanta",1]],
+  tronco:[["Chegar a 150 min de atividade por semana","Caminhar 30 min depois do jantar",5],["Começar a musculação","Treino de força de 30 min",2],["Dormir 7 horas","Deitar até 23h, sem celular no quarto",7],["Comer comida de verdade","Cozinhar em casa no jantar",4],["Beber menos álcool","Ficar o dia sem álcool",5],["Cuidar da respiração","5 min de respiração lenta",7]],
+  copa:[["Ler 3 livros","Ler 20 páginas antes de dormir",7],["Aprender algo novo","Praticar idioma, instrumento ou curso",3],["Usar menos redes sociais","Ficar até 30 min nas redes",7],["Ter mais foco","1 bloco de 60 min sem celular",5],["Cuidar das amizades","Ligar ou encontrar alguém importante",1],["Organizar a semana","20 min de planejamento",1],["Escrever um diário","10 min de diário à noite",5]],
+  frutos:[["Conhecer meus gastos","Registrar todos os gastos do dia",7],["Montar a reserva de emergência","Transferir o valor combinado para a reserva",1],["Quitar uma dívida cara","Separar o valor da parcela extra",1],["Nunca usar o rotativo","Conferir o saldo para pagar a fatura inteira",1],["Juntar para um sonho","Guardar o valor do sonho",1],["Aprender sobre finanças","Estudar finanças 20 min",2],["Doar com regularidade","Fazer uma doação ou ajudar alguém",1]]
+};
+const ICONS={
+  raiz:'<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="13" y="2" width="6" height="12" rx="2" fill="var(--tronco)" opacity=".5"/><path d="M16 13 C14 20 9 22 4 27 M16 13 C16 21 16 25 16 30 M16 13 C18 20 23 22 28 27 M16 18 C12 22 10 24 9 30 M16 18 C20 22 22 24 23 30" stroke="var(--raiz)" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>',
+  tronco:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 30 C13 22 13 16 12 10 L20 10 C19 16 19 22 20 30 Z" fill="var(--tronco)"/><path d="M13 14 C10 11 7 10 4 9 M19 13 C22 10 25 9 28 8" stroke="var(--tronco)" stroke-width="2.4" stroke-linecap="round"/><path d="M14 18 C15 20 15 23 14 26" stroke="var(--card)" stroke-width="1.2" opacity=".6" fill="none"/></svg>',
+  copa:'<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="13" r="9" fill="var(--copa)"/><circle cx="9" cy="17" r="6" fill="var(--copa)"/><circle cx="23" cy="17" r="6" fill="var(--copa)"/><rect x="14.5" y="20" width="3" height="10" rx="1" fill="var(--tronco)"/></svg>',
+  frutos:'<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9 C16 6 17 4 19 3" stroke="var(--tronco)" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M17 6 C20 3 24 4 25 6 C22 8 19 8 17 6Z" fill="var(--copa)"/><circle cx="16" cy="18" r="10" fill="var(--frutos)"/><circle cx="12" cy="14" r="2.5" fill="var(--card)" opacity=".45"/></svg>'
+};
+const DIAS=["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+const MESES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const $=id=>document.getElementById(id);
+
+/* ---------- desenho da árvore ---------- */
+let TID=0;
+function treeSVG(pr,label){
+  const id="t"+(++TID);
+  const cl=v=>Math.max(0,Math.min(100,+v||0));
+  const op=v=>(0.6+0.4*cl(v)/100).toFixed(2);
+  const g=v=>v==null;
+  let s='<svg viewBox="0 0 240 280" role="img" aria-label="'+(label||"Árvore")+'"><defs>'+
+  '<radialGradient id="'+id+'c" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#a6dc8f"/><stop offset=".5" stop-color="#5aae5c"/><stop offset="1" stop-color="#2f7440"/></radialGradient>'+
+  '<radialGradient id="'+id+'b" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#4a9650"/><stop offset="1" stop-color="#21552e"/></radialGradient>'+
+  '<linearGradient id="'+id+'t" x1="0" x2="1"><stop offset="0" stop-color="#5e3a22"/><stop offset=".45" stop-color="#a7764b"/><stop offset="1" stop-color="#6b4428"/></linearGradient>'+
+  '<radialGradient id="'+id+'f" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#ffd59a"/><stop offset=".5" stop-color="#f58f2e"/><stop offset="1" stop-color="#c95f16"/></radialGradient>'+
+  '<linearGradient id="'+id+'r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9478c8"/><stop offset="1" stop-color="#5d4290"/></linearGradient>'+
+  '<linearGradient id="'+id+'s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8c6a4"/><stop offset="1" stop-color="#c2aa85" stop-opacity=".3"/></linearGradient>'+
+  '</defs>';
+  s+='<path d="M8 226 Q120 204 232 226 L232 280 L8 280 Z" fill="url(#'+id+'s)"/>';
+  s+='<path d="M30 222 q3 -9 6 0 M44 219 q2 -7 5 0 M190 219 q3 -8 6 0 M204 222 q2 -7 5 0" stroke="#6fae63" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  const R=[["M116 226 C104 238 84 244 58 252",5],["M118 228 C110 244 102 256 92 270",4.5],["M121 228 C121 246 121 258 120 274",5],["M124 228 C132 244 140 256 150 270",4.5],["M126 226 C140 238 160 244 186 250",5],["M84 244 C76 250 70 256 66 264",2.4],["M156 244 C164 250 170 256 176 262",2.4],["M100 258 C96 264 92 268 86 272",2],["M140 258 C144 264 148 268 154 272",2]];
+  R.forEach(r=>{s+=g(pr.raiz)?'<path d="'+r[0]+'" stroke="#c9c0ae" stroke-width="'+Math.max(2,r[1]-1)+'" stroke-dasharray="4 4" stroke-linecap="round" fill="none"/>':'<path d="'+r[0]+'" stroke="url(#'+id+'r)" stroke-width="'+r[1]+'" stroke-linecap="round" fill="none" opacity="'+op(pr.raiz)+'"/>'});
+  s+='<ellipse cx="120" cy="226" rx="44" ry="5" fill="#3b2a1a" opacity=".14"/>';
+  const T="M102 228 C110 214 112 196 112 176 C112 160 110 150 104 140 C96 130 84 124 72 118 L76 112 C88 117 99 123 108 131 C110 122 110 112 108 100 L116 98 C118 112 118 124 117 134 C121 124 128 116 138 108 L143 113 C133 122 126 132 124 146 C124 160 126 176 128 192 C130 208 134 218 142 228 Z";
+  s+=g(pr.tronco)?'<path d="'+T+'" fill="#ece6da" stroke="#bfb6a4" stroke-width="1.5" stroke-dasharray="4 4"/>':'<g opacity="'+op(pr.tronco)+'"><path d="'+T+'" fill="url(#'+id+'t)"/><path d="M116 216 C118 198 117 182 118 164 M124 208 C125 194 124 182 125 170 M110 222 C113 214 114 206 114 198" stroke="#4b2e1a" stroke-width="1.2" fill="none" opacity=".45" stroke-linecap="round"/></g>';
+  const B=[[70,108,28],[170,104,28],[120,50,34],[88,68,30],[152,66,30],[120,96,40],[98,128,22],[142,128,22]];
+  const F=[[96,92,30],[146,90,30],[120,70,34],[80,88,22],[164,86,22],[108,116,24],[134,116,24],[120,40,22]];
+  if(g(pr.copa)){
+    B.concat(F).forEach(c=>{s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+(c[2]+1.5)+'" fill="#cfc7b6"/>'});
+    B.concat(F).forEach(c=>{s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="#efeadf"/>'});
+  }else{
+    s+='<g opacity="'+op(pr.copa)+'">';
+    B.forEach(c=>{s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="url(#'+id+'b)"/>'});
+    F.forEach(c=>{s+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="url(#'+id+'c)"/>'});
+    [[104,52,9,5,-25],[136,58,8,4,20],[86,80,7,4,-30],[118,84,10,5,-10],[152,80,7,4,25],[112,30,6,3,-20]].forEach(h=>{s+='<ellipse cx="'+h[0]+'" cy="'+h[1]+'" rx="'+h[2]+'" ry="'+h[3]+'" fill="#d9f2c6" opacity=".45" transform="rotate('+h[4]+' '+h[0]+' '+h[1]+')"/>'});
+    s+='</g>';
+  }
+  const P=[[92,90],[150,86],[120,44],[104,118],[138,116],[72,104],[168,100],[130,72],[106,64]];
+  const n=g(pr.frutos)?0:Math.round(P.length*cl(pr.frutos)/100);
+  P.forEach((f,i)=>{
+    const x=f[0],y=f[1];
+    if(i<n)s+='<path d="M'+x+' '+(y-7)+' q1 -4 4 -6" stroke="#5e3a22" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="'+(x+6)+'" cy="'+(y-12)+'" rx="4.5" ry="2.2" fill="#4c9a52" transform="rotate(-30 '+(x+6)+' '+(y-12)+')"/><circle cx="'+x+'" cy="'+y+'" r="8.5" fill="url(#'+id+'f)"/><circle cx="'+(x-2.8)+'" cy="'+(y-3)+'" r="2.4" fill="#fff" opacity=".65"/>';
+    else s+='<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="#fff" fill-opacity=".35" stroke="'+(g(pr.frutos)?"#c9c0ae":"#eaa860")+'" stroke-width="1.3" stroke-dasharray="3 3"/>';
+  });
+  return s+'</svg>';
+}
+
+/* ---------- datas ---------- */
+function qKey(d){return d.getFullYear()+"-T"+(Math.floor(d.getMonth()/3)+1)}
+function qStart(k){const p=k.split("-T");return new Date(+p[0],(+p[1]-1)*3,1)}
+function qEnd(k){const s=qStart(k);return new Date(s.getFullYear(),s.getMonth()+3,0)}
+function qShift(k,n){const s=qStart(k);return qKey(new Date(s.getFullYear(),s.getMonth()+3*n,1))}
+function qLabel(k){const p=k.split("-T"),s=qStart(k),e=qEnd(k);return p[1]+"º trimestre de "+p[0]+" ("+MESES[s.getMonth()]+"–"+MESES[e.getMonth()]+")"}
+function monday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function weeks(k){const out=[];let m=monday(qStart(k));const e=qEnd(k);while(m<=e){out.push(new Date(m));m=addDays(m,7)}return out}
+function today0(){const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate())}
+
+/* ---------- estado ---------- */
+function emptyPlan(){return {metas:{},checkins:{},semanas:{},colheita:{}}}
+let quarter=qKey(new Date());
+let plan=emptyPlan(),weekIdx=0;
+let sb=null,uid=null,fid=null,meuNome="",muralTimer=null,familiaInfo=null;
+let unsubPlan=null,muralDocs={},lastMuralJson=null;
+let saveTimer=null,saving=false,saveAgain=false,dirty=false;
+let editing={},drafts={},confirmDel={};
+
+function goalOf(k){return plan.metas[k]||{}}
+function hasGoal(k){const g=goalOf(k);return !!((g.meta||"").trim()||(g.acao||"").trim())}
+function weekCount(k,mon){const c=plan.checkins[k]||{};let n=0;for(let i=0;i<7;i++){if(c[iso(addDays(mon,i))])n++}return n}
+function progress(k){
+  if(!hasGoal(k))return null;
+  const alvo=Math.max(1,+goalOf(k).vezes||1),t=today0();
+  const ws=weeks(quarter).filter(m=>m<=t);
+  if(!ws.length)return 0;
+  let s=0;ws.forEach(m=>{s+=Math.min(weekCount(k,m),alvo)/alvo});
+  return Math.round(100*s/ws.length);
+}
+function myProgress(){const o={};PILARES.forEach(p=>o[p.k]=progress(p.k));return o}
+
+/* ---------- persistência (Supabase, sem login) ---------- */
+function normalize(d){const p=emptyPlan();if(d&&typeof d==="object"){["metas","checkins","semanas","colheita"].forEach(f=>{if(d[f]&&typeof d[f]==="object")p[f]=JSON.parse(JSON.stringify(d[f]))})}return p}
+function setStatus(t){$("saveStatus").textContent=t}
+function scheduleSave(){dirty=true;setStatus("Salvando…");clearTimeout(saveTimer);saveTimer=setTimeout(doSave,800)}
+function saveNow(){dirty=true;clearTimeout(saveTimer);setStatus("Salvando…");doSave()}
+function muralSummary(){
+  const metas=PILARES.filter(p=>hasGoal(p.k)&&goalOf(p.k).compartilhar).map(p=>{const g=goalOf(p.k);return {pilar:p.k,meta:g.meta||"",acao:g.acao||"",vezes:+g.vezes||1,progresso:progress(p.k)||0}});
+  const c=plan.colheita||{};
+  return {metas,colheita:c.compartilhar?{colhi:c.colhi||"",aprendi:c.aprendi||"",plantar:c.plantar||""}:null};
+}
+async function doSave(){
+  saveTimer=null;
+  if(!uid||!fid)return;
+  if(saving){saveAgain=true;return}
+  saving=true;
+  const snap=JSON.parse(JSON.stringify(plan)),mural=muralSummary(),q=quarter;
+  try{
+    const {data,error}=await sb.rpc("salvar_plano",{p_codigo:fid,p_pessoa:uid,p_trimestre:q,p_dados:snap,p_mural:mural});
+    if(error)throw error;
+    if(data===false){setStatus("Sua pessoa não foi encontrada nesta família. Toque em Trocar pessoa.");}
+    else{
+      setStatus("Tudo salvo");
+      const me=muralDocs[uid]||(muralDocs[uid]={nome:meuNome,quarters:{}});
+      me.quarters=Object.assign({},me.quarters,{[q]:mural});renderMural();
+    }
+  }catch(e){setStatus("Não foi possível salvar agora. Verifique a internet e tente de novo.")}
+  saving=false;
+  if(saveAgain){saveAgain=false;doSave();return}
+  if(!saveTimer)dirty=false;
+}
+async function subscribePlan(){
+  const q=quarter;
+  plan=emptyPlan();renderAll();
+  const {data,error}=await sb.rpc("ler_plano",{p_codigo:fid,p_pessoa:uid,p_trimestre:q});
+  if(q!==quarter)return;
+  if(error){showBanner("Não foi possível carregar seu plano agora. Tente mais tarde.");return}
+  hideBanner();
+  if(dirty||saving)return;
+  plan=normalize(data);
+  renderAll();
+}
+async function carregarFamilia(code){
+  const {data,error}=await sb.rpc("ver_familia",{p_codigo:code});
+  if(error)throw error;
+  return data;
+}
+async function loadMural(){
+  if(!fid)return;
+  try{
+    const f=await carregarFamilia(fid);
+    if(!f)return;
+    familiaInfo=f;
+    const m={};(f.pessoas||[]).forEach(p=>{m[p.id]={nome:p.nome,quarters:p.mural||{}}});
+    if(dirty||saving){if(muralDocs[uid])m[uid]=muralDocs[uid]}
+    muralDocs=m;renderMural();
+  }catch(e){$("mural").innerHTML='<div class="card empty">Não foi possível carregar o mural agora.</div>'}
+}
+function subscribeMural(){
+  clearInterval(muralTimer);
+  loadMural();
+  muralTimer=setInterval(()=>{if(document.visibilityState==="visible")loadMural()},30000);
+}
+
+/* ---------- helpers ---------- */
+function el(tag,attrs,children){const e=document.createElement(tag);if(attrs)for(const k in attrs){if(k==="text")e.textContent=attrs[k];else if(k==="html")e.innerHTML=attrs[k];else if(k==="style")e.style.cssText=attrs[k];else e.setAttribute(k,attrs[k])}(children||[]).forEach(c=>{if(c!=null)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+function pv(k){return "--c:var(--"+k+");--soft:var(--"+k+"-soft)"}
+function pctRow(v){const n=Math.max(0,Math.min(100,+v||0));return el("div",{class:"pctrow"},[el("div",{class:"bar"},[el("i",{style:"width:"+n+"%"})]),el("span",{text:n+"%"})])}
+function showBanner(t){const b=$("banner");b.textContent=t;b.hidden=false}
+function hideBanner(){$("banner").hidden=true}
+
+/* ---------- aba A árvore ---------- */
+function renderAbout(){
+  const g=$("aboutTree");g.innerHTML="";
+  g.appendChild(el("div",{class:"tree",html:treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera")}));
+  PILARES.forEach(p=>{
+    const s=SOBRE[p.k];
+    g.appendChild(el("div",{class:"anno a-"+p.k,style:pv(p.k)},[
+      el("span",{class:"k",text:p.nome+" = "+p.sub}),
+      el("span",{text:s.desc}),
+      el("span",{class:"small muted",text:"Exemplos: "+s.ex})
+    ]));
+  });
+}
+
+/* ---------- aba Minhas metas ---------- */
+function renderMyTree(){$("myTree").innerHTML=treeSVG(myProgress(),"Minha árvore")}
+function renderPlan(){
+  const box=$("pcards");box.innerHTML="";
+  PILARES.forEach(p=>box.appendChild(pilarCard(p)));
+  const c=plan.colheita||{},a=document.activeElement;
+  if(!(a&&a.closest&&a.closest("#colheita"))){$("c-colhi").value=c.colhi||"";$("c-aprendi").value=c.aprendi||"";$("c-plantar").value=c.plantar||"";$("c-share").checked=!!c.compartilhar}
+}
+function pilarCard(p){
+  const k=p.k,s=SOBRE[k];
+  const pr=progress(k);
+  const kids=[
+    el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[k]}),el("div",{},[el("h3",{text:p.nome+" · "+p.sub}),el("span",{class:"small muted",text:p.perg})])]),
+    el("p",{class:"desc",text:s.desc}),
+    el("p",{class:"imp"},[el("b",{text:"Por que importa: "}),s.imp])
+  ];
+  if(editing[k])kids.push(goalForm(p));
+  else if(hasGoal(k))kids.push(goalView(p,pr));
+  else{
+    const b=el("button",{type:"button",class:"btn primary big"},["+ Cadastrar meta de "+p.sub]);
+    b.addEventListener("click",()=>startEdit(k));
+    kids.push(el("div",{class:"row"},[b]));
+  }
+  return el("div",{class:"card pcard",style:pv(k)},kids);
+}
+function startEdit(k){
+  drafts[k]=Object.assign({meta:"",acao:"",vezes:3,seEntao:"",compartilhar:false},goalOf(k));
+  editing[k]=true;confirmDel[k]=false;renderPlan();
+  setTimeout(()=>{const i=$(k+"-meta");if(i)i.focus()},0);
+}
+function goalView(p,pr){
+  const k=p.k,g=goalOf(k);
+  const edit=el("button",{type:"button",class:"btn"},["Editar meta"]);
+  edit.addEventListener("click",()=>startEdit(k));
+  const del=el("button",{type:"button",class:"btn danger"},[confirmDel[k]?"Confirmar exclusão":"Excluir"]);
+  del.addEventListener("click",()=>{
+    if(!confirmDel[k]){confirmDel[k]=true;renderPlan();return}
+    confirmDel[k]=false;delete plan.metas[k];saveNow();renderPlan();renderMyTree();renderCheckin();
+  });
+  return el("div",{class:"goalbox"},[
+    el("span",{class:"small muted",text:"Minha meta do trimestre"}),
+    el("span",{class:"t",text:g.meta||g.acao}),
+    el("span",{text:"Eu vou "+(g.acao||"—").replace(/^eu vou\s*/i,"").replace(/^./,c=>c.toLowerCase())+", "+(+g.vezes||1)+(+g.vezes===1?" vez":" vezes")+" por semana."}),
+    g.seEntao?el("span",{class:"small",text:"Plano B: "+g.seEntao}):null,
+    pctRow(pr),
+    el("span",{class:"tag",text:g.compartilhar?"Aparece no mural da família":"Fora do mural"}),
+    el("div",{class:"row"},[edit,del])
+  ]);
+}
+function goalForm(p){
+  const k=p.k,d=drafts[k],id=s=>k+"-"+s;
+  const ideas=el("div",{class:"ideas"});
+  IDEIAS[k].forEach(it=>{const b=el("button",{type:"button",class:"chip"},[it[0]+" · "+it[1]]);b.addEventListener("click",()=>{d.meta=it[0];d.acao=it[1];d.vezes=it[2];renderPlan()});ideas.appendChild(b)});
+  const meta=el("input",{type:"text",id:id("meta"),placeholder:"Ex.: "+IDEIAS[k][0][0]});meta.value=d.meta||"";meta.addEventListener("input",e=>{d.meta=e.target.value});
+  const acao=el("input",{type:"text",id:id("acao"),placeholder:"Ex.: "+IDEIAS[k][0][1]});acao.value=d.acao||"";acao.addEventListener("input",e=>{d.acao=e.target.value});
+  const vez=el("select",{id:id("vezes")});
+  for(let i=1;i<=7;i++){const o=el("option",{value:String(i)},[i+(i===1?" vez":" vezes")+" por semana"]);if((+d.vezes||3)===i)o.selected=true;vez.appendChild(o)}
+  vez.addEventListener("change",e=>{d.vezes=+e.target.value});
+  const se=el("input",{type:"text",id:id("se"),placeholder:"Ex.: Se eu acordar atrasado, então faço 3 minutos no caminho"});se.value=d.seEntao||"";se.addEventListener("input",e=>{d.seEntao=e.target.value});
+  const share=el("input",{type:"checkbox",id:id("share")});share.checked=!!d.compartilhar;share.addEventListener("change",e=>{d.compartilhar=e.target.checked});
+  const err=el("p",{class:"err","aria-live":"polite"});
+  const save=el("button",{type:"button",class:"btn primary"},["Salvar meta"]);
+  save.addEventListener("click",()=>{
+    if(!(d.meta||"").trim()||!(d.acao||"").trim()){err.textContent="Preencha a meta do trimestre e o compromisso para salvar.";return}
+    plan.metas[k]={meta:d.meta.trim(),acao:d.acao.trim(),vezes:+d.vezes||1,seEntao:(d.seEntao||"").trim(),compartilhar:!!d.compartilhar};
+    editing[k]=false;delete drafts[k];saveNow();renderPlan();renderMyTree();renderCheckin();
+  });
+  const cancel=el("button",{type:"button",class:"btn"},["Cancelar"]);
+  cancel.addEventListener("click",()=>{editing[k]=false;delete drafts[k];renderPlan()});
+  return el("div",{class:"formbox"},[
+    el("p",{class:"small muted",text:"Toque numa ideia para começar ou escreva a sua:"}),
+    ideas,
+    el("div",{class:"field"},[el("label",{for:id("meta"),text:"1. Meta do trimestre (aonde quero chegar)"}),meta]),
+    el("div",{class:"row"},[
+      el("div",{class:"field grow"},[el("label",{for:id("acao"),text:"2. Compromisso: eu vou…"}),acao]),
+      el("div",{class:"field",style:"flex:0 1 210px"},[el("label",{for:id("vezes"),text:"3. Frequência"}),vez])
+    ]),
+    el("div",{class:"field"},[el("label",{for:id("se"),text:"4. Plano B: se… então… (opcional)"}),se]),
+    el("label",{class:"check"},[share," Mostrar esta meta no mural da família"]),
+    err,
+    el("div",{class:"row"},[save,cancel])
+  ]);
+}
+
+/* ---------- aba Check-in ---------- */
+function currentWeekIdx(){const ws=weeks(quarter),t=today0();let i=ws.findIndex(m=>t>=m&&t<addDays(m,7));if(i<0)i=t<ws[0]?0:ws.length-1;return i}
+function fmtWeek(m){const e=addDays(m,6);return m.getDate()+" "+MESES[m.getMonth()]+" a "+e.getDate()+" "+MESES[e.getMonth()]}
+function renderCheckin(){
+  const ws=weeks(quarter);
+  weekIdx=Math.max(0,Math.min(weekIdx,ws.length-1));
+  const mon=ws[weekIdx],t=today0();
+  $("wLabel").textContent="Semana de "+fmtWeek(mon);
+  $("wPrev").disabled=weekIdx===0;$("wNext").disabled=weekIdx===ws.length-1;
+  const rows=$("checkRows");rows.innerHTML="";
+  const ativos=PILARES.filter(p=>hasGoal(p.k));
+  if(!ativos.length){
+    const b=el("button",{type:"button",class:"btn primary"},["Criar minhas metas"]);
+    b.addEventListener("click",()=>showTab("metas"));
+    rows.appendChild(el("div",{class:"card empty"},[el("p",{text:"Você ainda não tem metas neste trimestre."}),b]));
+  }
+  ativos.forEach(p=>{
+    const g=goalOf(p.k),alvo=+g.vezes||1,n=weekCount(p.k,mon);
+    const days=el("div",{class:"days"});
+    for(let i=0;i<7;i++){
+      const d=addDays(mon,i),key=iso(d),on=!!((plan.checkins[p.k]||{})[key]);
+      const b=el("button",{type:"button",class:"day","aria-pressed":on?"true":"false","aria-label":DIAS[i]+" "+d.getDate()+" de "+MESES[d.getMonth()]},[DIAS[i],el("b",{text:String(d.getDate())})]);
+      if(d>t)b.disabled=true;
+      b.addEventListener("click",()=>{const c=plan.checkins[p.k]||(plan.checkins[p.k]={});if(c[key])delete c[key];else c[key]=true;scheduleSave();renderCheckin();renderMyTree()});
+      days.appendChild(b);
+    }
+    rows.appendChild(el("div",{class:"card pcard",style:pv(p.k)},[
+      el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.k]}),el("div",{},[el("h3",{text:g.acao||g.meta}),el("span",{class:"pill "+(n>=alvo?"ok":"no"),text:n+" de "+alvo+" nesta semana"})])]),
+      g.seEntao?el("p",{class:"muted small",text:"Plano B: "+g.seEntao}):null,
+      days
+    ]));
+  });
+  const r=(plan.semanas||{})[iso(mon)]||{};
+  $("r-ajudou").value=r.ajudou||"";$("r-atrapalhou").value=r.atrapalhou||"";$("r-ajuste").value=r.ajuste||"";
+}
+function setReflexao(f,v){const k=iso(weeks(quarter)[weekIdx]);const s=plan.semanas||(plan.semanas={});s[k]=Object.assign({},s[k]||{},{[f]:v});scheduleSave()}
+
+/* ---------- aba Mural ---------- */
+function renderMural(){
+  const box=$("mural");
+  const ids=Object.keys(muralDocs);
+  box.innerHTML="";
+  const order=ids.sort((a,b)=>a===uid?-1:b===uid?1:0);
+  if(!order.length){box.appendChild(el("div",{class:"card empty",text:"Ninguém compartilhou metas ainda. No seu plano, marque \"Mostrar esta meta no mural da família\" para sua árvore aparecer aqui."}));return}
+  order.forEach(i=>{
+    const q=((muralDocs[i]||{}).quarters||{})[quarter]||{metas:[],colheita:null};
+    const nome=i===uid?"Sua árvore":(String((muralDocs[i]||{}).nome||"").split(" ")[0]||"Alguém da família");
+    const metas={};(q.metas||[]).forEach(m=>{if(m&&m.pilar)metas[m.pilar]=m});
+    const pr={};PILARES.forEach(p=>{pr[p.k]=metas[p.k]?(+metas[p.k].progresso||0):null});
+    const grid=el("div",{class:"treegrid"});
+    grid.appendChild(el("div",{class:"tree",html:treeSVG(pr,"Árvore de "+nome)}));
+    PILARES.forEach(p=>{
+      const m=metas[p.k];
+      grid.appendChild(el("div",{class:"anno a-"+p.k,style:pv(p.k)},m?[
+        el("span",{class:"k",text:p.nome+" · "+p.sub}),
+        el("span",{class:"t",text:String(m.meta||m.acao||"")}),
+        m.acao?el("span",{class:"small",text:String(m.acao)+" · "+(+m.vezes||1)+"x por semana"}):null,
+        pctRow(m.progresso)
+      ]:[
+        el("span",{class:"k",text:p.nome+" · "+p.sub}),
+        el("span",{class:"small muted",text:"Meta não compartilhada"})
+      ]));
+    });
+    const kids=[el("h3",{text:i===uid?nome:"Árvore de "+nome}),el("div",{class:"scene"},[grid])];
+    if(q.colheita){
+      kids.push(el("div",{class:"harvest"},[
+        el("b",{text:"Colheita do trimestre"}),
+        q.colheita.colhi?el("span",{text:"Colhi: "+q.colheita.colhi}):null,
+        q.colheita.aprendi?el("span",{text:"Aprendi: "+q.colheita.aprendi}):null,
+        q.colheita.plantar?el("span",{text:"Vou plantar: "+q.colheita.plantar}):null
+      ]));
+    }
+    box.appendChild(el("div",{class:"card person"},kids));
+  });
+}
+
+function renderAll(){$("qLabel").textContent=qLabel(quarter);renderMyTree();renderPlan();weekIdx=currentWeekIdx();renderCheckin();renderMural()}
+
+/* ---------- abas e eventos ---------- */
+const TABS=["arvore","metas","checkin","mural"];
+function showTab(n){TABS.forEach(t=>{$("tab-"+t).setAttribute("aria-selected",t===n?"true":"false");$("view-"+t).hidden=t!==n});if(n==="checkin")renderCheckin();if(n==="metas"){renderPlan();renderMyTree()}if(n==="mural"){renderMural();loadMural()}window.scrollTo({top:0})}
+TABS.forEach(t=>$("tab-"+t).addEventListener("click",()=>showTab(t)));
+$("goMetas").addEventListener("click",()=>showTab("metas"));
+function changeQuarter(n){if(dirty||saving){clearTimeout(saveTimer);doSave()}quarter=qShift(quarter,n);editing={};drafts={};confirmDel={};subscribePlan()}
+$("qPrev").addEventListener("click",()=>changeQuarter(-1));
+$("qNext").addEventListener("click",()=>changeQuarter(1));
+$("wPrev").addEventListener("click",()=>{weekIdx--;renderCheckin()});
+$("wNext").addEventListener("click",()=>{weekIdx++;renderCheckin()});
+[["c-colhi","colhi"],["c-aprendi","aprendi"],["c-plantar","plantar"]].forEach(([i,f])=>$(i).addEventListener("input",e=>{plan.colheita=Object.assign({},plan.colheita,{[f]:e.target.value});scheduleSave()}));
+$("c-share").addEventListener("change",e=>{plan.colheita=Object.assign({},plan.colheita,{compartilhar:e.target.checked});scheduleSave()});
+$("c-save").addEventListener("click",()=>saveNow());
+[["r-ajudou","ajudou"],["r-atrapalhou","atrapalhou"],["r-ajuste","ajuste"]].forEach(([i,f])=>$(i).addEventListener("input",e=>setReflexao(f,e.target.value)));
+
+/* ---------- início ---------- */
+renderAbout();
+$("authTree").innerHTML=treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera");
+function show(id,on){$(id).hidden=!on}
+function screen(n){
+  show("cfgBox",n==="cfg");show("welcomeBox",n==="welcome");show("whoBox",n==="who");show("app",n==="app");
+  show("famPill",n==="app"||n==="who");show("btnTrocar",n==="app");show("quarterBox",n==="app");
+}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+function linkFamilia(){return location.origin+location.pathname+"#"+fid}
+function convite(){return "Vem cultivar sua árvore na Família Prospera! Abra este link, toque em \"Sou novo aqui\" e escreva seu nome: "+linkFamilia()}
+function codigoDoHash(){const h=(location.hash||"").replace("#","").toUpperCase().replace(/[^A-Z0-9]/g,"");return h.length===6?h:null}
+
+async function abrirFamilia(code){
+  $("famErr").textContent="";
+  let f;
+  try{f=await carregarFamilia(code)}catch(e){screen("welcome");$("famErr").textContent="Não foi possível abrir a família. Verifique a internet.";return}
+  if(!f){screen("welcome");$("famErr").textContent="Não encontramos essa família. Confira o código.";ls("fp-familia",null);return}
+  fid=code;familiaInfo=f;ls("fp-familia",code);
+  if(location.hash.replace("#","")!==code)history.replaceState(null,"","#"+code);
+  $("famPill").textContent=f.nome||"Minha família";
+  $("famCode").textContent=code;$("famLink").textContent=linkFamilia();
+  const salvo=ls("fp-pessoa-"+code);
+  const pessoa=(f.pessoas||[]).find(p=>p.id===salvo);
+  if(pessoa){entrarComo(pessoa)}else{mostrarQuem()}
+}
+function mostrarQuem(){
+  screen("who");$("who").textContent="Cada um cultiva a sua árvore";
+  $("whoFam").textContent=(familiaInfo&&familiaInfo.nome?familiaInfo.nome+": ":"")+"toque no seu nome ou crie a sua árvore.";
+  const box=$("whoList");box.innerHTML="";
+  (familiaInfo.pessoas||[]).forEach(p=>{
+    const b=el("button",{type:"button",class:"chip",style:"font-size:1rem;padding:9px 16px"},[p.nome]);
+    b.addEventListener("click",()=>entrarComo(p));box.appendChild(b);
+  });
+  if(!(familiaInfo.pessoas||[]).length)box.appendChild(el("p",{class:"small muted",text:"Ninguém entrou ainda. Seja o primeiro!"}));
+}
+function entrarComo(p){
+  uid=p.id;meuNome=p.nome;ls("fp-pessoa-"+fid,uid);
+  $("who").textContent="Árvore de "+String(meuNome).split(" ")[0];
+  const m={};(familiaInfo.pessoas||[]).forEach(x=>{m[x.id]={nome:x.nome,quarters:x.mural||{}}});muralDocs=m;
+  editing={};drafts={};confirmDel={};dirty=false;
+  screen("app");showTab("arvore");
+  subscribePlan();subscribeMural();
+}
+
+const pronto=cfg&&cfg.url&&cfg.anonKey&&String(cfg.url).indexOf("COLE")!==0;
+if(!pronto){screen("cfg")}
+else{
+  sb=createClient(cfg.url,cfg.anonKey,{auth:{persistSession:false,autoRefreshToken:false}});
+  const code=codigoDoHash()||ls("fp-familia");
+  if(code)abrirFamilia(code);else screen("welcome");
+}
+window.addEventListener("hashchange",()=>{const c=codigoDoHash();if(c&&c!==fid){uid=null;abrirFamilia(c)}});
+
+$("btnCriar").addEventListener("click",async()=>{
+  const nome=$("famNome").value.trim();$("famErr").textContent="";
+  if(!nome){$("famErr").textContent="Digite o nome da família.";return}
+  const {data,error}=await sb.rpc("criar_familia",{p_nome:nome});
+  if(error||!data){$("famErr").textContent="Não foi possível criar a família. Tente de novo.";return}
+  abrirFamilia(data);
+});
+$("btnEntrar").addEventListener("click",()=>{
+  const code=$("famCodigo").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  $("famErr").textContent="";
+  if(code.length!==6){$("famErr").textContent="O código tem 6 letras e números.";return}
+  abrirFamilia(code);
+});
+$("btnNovo").addEventListener("click",async()=>{
+  const nome=$("novoNome").value.trim();$("whoErr").textContent="";
+  if(!nome){$("whoErr").textContent="Digite seu nome.";return}
+  if((familiaInfo.pessoas||[]).some(p=>String(p.nome).trim().toLowerCase()===nome.toLowerCase())){$("whoErr").textContent="Já existe alguém com esse nome. Toque nele acima ou use outro nome.";return}
+  const {data,error}=await sb.rpc("adicionar_pessoa",{p_codigo:fid,p_nome:nome});
+  if(error||!data){$("whoErr").textContent="Não foi possível criar sua árvore. Tente de novo.";return}
+  const p={id:data,nome,mural:{}};
+  familiaInfo.pessoas=(familiaInfo.pessoas||[]).concat([p]);
+  $("novoNome").value="";
+  entrarComo(p);
+});
+$("btnTrocar").addEventListener("click",async()=>{
+  if(dirty||saving){clearTimeout(saveTimer);await doSave()}
+  ls("fp-pessoa-"+fid,null);uid=null;clearInterval(muralTimer);
+  try{const f=await carregarFamilia(fid);if(f)familiaInfo=f}catch(e){}
+  mostrarQuem();
+});
+$("btnCopiar").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(convite());$("copyMsg").textContent="Convite copiado. Cole no WhatsApp da família."}
+  catch(e){$("copyMsg").textContent=convite()}
+});
+</script>
+</body>
+</html>
