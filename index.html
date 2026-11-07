@@ -551,10 +551,10 @@ function renderAbout(){
   const g=$("aboutTree");g.innerHTML="";
   g.appendChild(el("div",{class:"tree",html:treeSVG({raiz:100,tronco:100,copa:100,frutos:100},"Árvore da Família Prospera, da raiz aos frutos",true)}));
   const passos=[
-    ["prosperidade",4,"a copa (corpo) cheia de energia produz os frutos"],
-    ["corpo",3,"o tronco (mente) dá direção e sustenta a copa"],
-    ["mente",2,"a raiz (espírito) sustenta o tronco"],
-    ["espirito",1,null]
+    ["espirito",1,"a raiz (espírito) sustenta o tronco"],
+    ["mente",2,"o tronco (mente) dá direção e sustenta a copa"],
+    ["corpo",3,"a copa (corpo) cheia de energia produz os frutos"],
+    ["prosperidade",4,null]
   ];
   const flow=el("div",{class:"flow"});
   passos.forEach(([k,n,seta])=>{
@@ -565,9 +565,9 @@ function renderAbout(){
       el("span",{text:s.desc}),
       el("span",{class:"small muted",text:"Exemplos: "+s.ex})
     ]));
-    if(seta)flow.appendChild(el("div",{class:"flowarrow"},[el("b",{text:"↑"}),seta]));
+    if(seta)flow.appendChild(el("div",{class:"flowarrow"},[el("b",{text:"↓"}),seta]));
   });
-  flow.appendChild(el("p",{class:"small muted",style:"padding-left:4px",text:"Leia de baixo para cima: tudo começa na raiz e termina nos frutos."}));
+  flow.appendChild(el("p",{class:"small muted",style:"padding-left:4px",text:"Tudo começa na raiz e termina nos frutos."}));
   g.appendChild(flow);
 }
 
