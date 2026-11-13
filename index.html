@@ -135,7 +135,7 @@ textarea{min-height:72px;resize:vertical}
 .person .harvest{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;display:grid;gap:4px;font-size:.92rem}
 
 @media (max-width:700px){
-  .treegrid{grid-template-columns:1fr;grid-template-areas:"tree" "copa" "frutos" "tronco" "raiz"}
+  .treegrid{grid-template-columns:1fr;grid-template-areas:"tree" "raiz" "tronco" "copa" "frutos"}
   .treegrid .tree{max-width:240px;justify-self:center;width:100%}
   .cycle{grid-template-columns:1fr}
   .mine{grid-template-columns:1fr}
@@ -261,7 +261,7 @@ textarea{min-height:72px;resize:vertical}
           <svg viewBox="0 0 52 52" aria-hidden="true"><ellipse cx="26" cy="42" rx="20" ry="5" fill="var(--soil)"/><path d="M26 40 C26 30 26 26 26 22" stroke="var(--copa)" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M26 28 C18 28 15 22 15 18 C21 18 26 22 26 28Z" fill="var(--copa)"/><path d="M26 24 C33 24 37 18 37 13 C30 13 26 18 26 24Z" fill="var(--copa)"/></svg>
           <span class="n">1 · Plantar</span>
           <h3>Escolha suas metas</h3>
-          <p class="small">No início do trimestre, crie até uma meta para cada parte da árvore.</p>
+          <p class="small">No início do trimestre, crie uma ou mais metas para cada parte da árvore.</p>
         </div>
         <div class="step">
           <svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 22 H30 V38 H8 Z" fill="var(--accent)" opacity=".85"/><path d="M30 26 L44 16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M14 22 C14 14 24 14 24 22" stroke="var(--accent)" stroke-width="3" fill="none"/><circle cx="44" cy="22" r="2" fill="var(--sky)" stroke="var(--copa)"/><circle cx="47" cy="28" r="2" fill="var(--sky)" stroke="var(--copa)"/><circle cx="42" cy="31" r="2" fill="var(--sky)" stroke="var(--copa)"/></svg>
@@ -280,7 +280,7 @@ textarea{min-height:72px;resize:vertical}
     <div class="card">
       <h2>Como usar a plataforma</h2>
       <ol class="howto">
-        <li><div><b>Crie suas metas</b> na aba Minhas metas: uma para cada parte da árvore, no formato "eu vou [ação], [quantas vezes] por semana".</div></li>
+        <li><div><b>Crie suas metas</b> na aba Minhas metas: uma ou mais para cada parte da árvore, no formato "eu vou [ação], [quantas vezes] por semana".</div></li>
         <li><div><b>Faça o check-in</b> toda semana. Sua árvore fica mais forte a cada compromisso cumprido.</div></li>
         <li><div><b>Escolha o que mostrar</b> no Mural da família. No mural aparecem só as metas que você marcar.</div></li>
       </ol>
@@ -294,7 +294,8 @@ textarea{min-height:72px;resize:vertical}
       <div class="tree" id="myTree"></div>
       <div style="display:grid;gap:8px">
         <h2>Vamos criar suas metas</h2>
-        <p>Escolha até uma meta para cada parte da sua árvore. Toque em <b>Cadastrar meta</b>, preencha os 4 passos e toque em <b>Salvar meta</b>.</p>
+        <p>Crie uma ou mais metas para cada parte da sua árvore. Toque em <b>Cadastrar meta</b>, preencha os 4 passos e toque em <b>Salvar meta</b>. Para incluir outra, use <b>Adicionar outra meta</b>.</p>
+        <p class="small muted">Dica: comece com 1 ou 2 metas por parte. Poucas metas cumpridas valem mais que muitas esquecidas.</p>
         <p class="small muted">Sua árvore ganha cor e frutos conforme você cumpre os compromissos no check-in. No mural aparecem só as metas que você marcar.</p>
       </div>
     </div>
@@ -462,27 +463,45 @@ let unsubPlan=null,muralDocs={},lastMuralJson=null;
 let saveTimer=null,saving=false,saveAgain=false,dirty=false;
 let editing={},drafts={},confirmDel={};
 
-function goalOf(k){return plan.metas[k]||{}}
-function hasGoal(k){const g=goalOf(k);return !!((g.meta||"").trim()||(g.acao||"").trim())}
-function weekCount(k,mon){const c=plan.checkins[k]||{};let n=0;for(let i=0;i<7;i++){if(c[iso(addDays(mon,i))])n++}return n}
-function progress(k){
-  if(!hasGoal(k))return null;
-  const alvo=Math.max(1,+goalOf(k).vezes||1),t=today0();
+function goalsOf(k){const a=plan.metas[k];return Array.isArray(a)?a:[]}
+function validGoal(g){return !!(g&&((g.meta||"").trim()||(g.acao||"").trim()))}
+function hasGoal(k){return goalsOf(k).some(validGoal)}
+function weekCount(gid,mon){const c=plan.checkins[gid]||{};let n=0;for(let i=0;i<7;i++){if(c[iso(addDays(mon,i))])n++}return n}
+function goalProgress(g){
+  const alvo=Math.max(1,+g.vezes||1),t=today0();
   const ws=weeks(quarter).filter(m=>m<=t);
   if(!ws.length)return 0;
-  let s=0;ws.forEach(m=>{s+=Math.min(weekCount(k,m),alvo)/alvo});
+  let s=0;ws.forEach(m=>{s+=Math.min(weekCount(g.id,m),alvo)/alvo});
   return Math.round(100*s/ws.length);
 }
+function progress(k){
+  const gs=goalsOf(k).filter(validGoal);
+  if(!gs.length)return null;
+  return Math.round(gs.reduce((s,g)=>s+goalProgress(g),0)/gs.length);
+}
+function newId(){return "m"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function myProgress(){const o={};PILARES.forEach(p=>o[p.part]=progress(p.k));return o}
 
 /* ---------- persistência (Supabase, sem login) ---------- */
 function migraKeys(o){if(!o||typeof o!=="object")return o;const r={};Object.keys(o).forEach(k=>{r[MIGRA[k]||k]=o[k]});return r}
-function normalize(d){const p=emptyPlan();if(d&&typeof d==="object"){["metas","checkins","semanas","colheita"].forEach(f=>{if(d[f]&&typeof d[f]==="object")p[f]=JSON.parse(JSON.stringify(d[f]))})}p.metas=migraKeys(p.metas);p.checkins=migraKeys(p.checkins);return p}
+function normalize(d){
+  const p=emptyPlan();
+  if(d&&typeof d==="object"){["metas","checkins","semanas","colheita"].forEach(f=>{if(d[f]&&typeof d[f]==="object")p[f]=JSON.parse(JSON.stringify(d[f]))})}
+  p.metas=migraKeys(p.metas);p.checkins=migraKeys(p.checkins);
+  Object.keys(p.metas).forEach(k=>{
+    const v=p.metas[k];
+    if(Array.isArray(v))p.metas[k]=v.filter(validGoal).map(g=>Object.assign({},g,{id:g.id||newId()}));
+    else if(v&&typeof v==="object")p.metas[k]=validGoal(v)?[Object.assign({},v,{id:k})]:[];
+    else delete p.metas[k];
+  });
+  return p;
+}
 function setStatus(t){$("saveStatus").textContent=t}
 function scheduleSave(){dirty=true;setStatus("Salvando…");clearTimeout(saveTimer);saveTimer=setTimeout(doSave,800)}
 function saveNow(){dirty=true;clearTimeout(saveTimer);setStatus("Salvando…");doSave()}
 function muralSummary(){
-  const metas=PILARES.filter(p=>hasGoal(p.k)&&goalOf(p.k).compartilhar).map(p=>{const g=goalOf(p.k);return {pilar:p.k,meta:g.meta||"",acao:g.acao||"",vezes:+g.vezes||1,progresso:progress(p.k)||0}});
+  const metas=[];
+  PILARES.forEach(p=>goalsOf(p.k).filter(g=>validGoal(g)&&g.compartilhar).forEach(g=>metas.push({pilar:p.k,id:g.id,meta:g.meta||"",acao:g.acao||"",vezes:+g.vezes||1,progresso:goalProgress(g)})));
   const c=plan.colheita||{};
   return {metas,colheita:c.compartilhar?{colhi:c.colhi||"",aprendi:c.aprendi||"",plantar:c.plantar||""}:null};
 }
@@ -580,48 +599,52 @@ function renderPlan(){
   if(!(a&&a.closest&&a.closest("#colheita"))){$("c-colhi").value=c.colhi||"";$("c-aprendi").value=c.aprendi||"";$("c-plantar").value=c.plantar||"";$("c-share").checked=!!c.compartilhar}
 }
 function pilarCard(p){
-  const k=p.k,s=SOBRE[k];
-  const pr=progress(k);
+  const k=p.k,s=SOBRE[k],gs=goalsOf(k).filter(validGoal);
   const kids=[
     el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.part]}),el("div",{},[el("h3",{text:p.sub+" · "+p.nome}),el("span",{class:"small muted",text:p.perg})])]),
     el("p",{class:"desc",text:s.desc}),
     el("p",{class:"imp"},[el("b",{text:"Por que importa: "}),s.imp])
   ];
-  if(editing[k])kids.push(goalForm(p));
-  else if(hasGoal(k))kids.push(goalView(p,pr));
+  gs.forEach((g,i)=>{kids.push(editing[g.id]?goalForm(p,g.id,g.id):goalView(p,g,i+1,gs.length))});
+  const dk="novo-"+k;
+  if(editing[dk])kids.push(goalForm(p,dk,null));
   else{
-    const b=el("button",{type:"button",class:"btn primary big"},["+ Cadastrar meta de "+p.sub]);
-    b.addEventListener("click",()=>startEdit(k));
+    const b=el("button",{type:"button",class:"btn "+(gs.length?"":"primary ")+"big"},[gs.length?"+ Adicionar outra meta de "+p.sub:"+ Cadastrar meta de "+p.sub]);
+    b.addEventListener("click",()=>startEdit(k,null));
     kids.push(el("div",{class:"row"},[b]));
   }
   return el("div",{class:"card pcard",style:pv(p.part)},kids);
 }
-function startEdit(k){
-  drafts[k]=Object.assign({meta:"",acao:"",vezes:3,seEntao:"",compartilhar:false},goalOf(k));
-  editing[k]=true;confirmDel[k]=false;renderPlan();
-  setTimeout(()=>{const i=$(k+"-meta");if(i)i.focus()},0);
+function startEdit(k,gid){
+  const dk=gid||("novo-"+k);
+  const g=gid?goalsOf(k).find(x=>x.id===gid):null;
+  drafts[dk]=Object.assign({meta:"",acao:"",vezes:3,seEntao:"",compartilhar:false},g||{});
+  editing[dk]=true;confirmDel[dk]=false;renderPlan();
+  setTimeout(()=>{const i=$(dk+"-meta");if(i){i.focus();i.scrollIntoView({block:"center",behavior:"smooth"})}},0);
 }
-function goalView(p,pr){
-  const k=p.k,g=goalOf(k);
+function goalView(p,g,n,total){
+  const k=p.k;
   const edit=el("button",{type:"button",class:"btn"},["Editar meta"]);
-  edit.addEventListener("click",()=>startEdit(k));
-  const del=el("button",{type:"button",class:"btn danger"},[confirmDel[k]?"Confirmar exclusão":"Excluir"]);
+  edit.addEventListener("click",()=>startEdit(k,g.id));
+  const del=el("button",{type:"button",class:"btn danger"},[confirmDel[g.id]?"Confirmar exclusão":"Excluir"]);
   del.addEventListener("click",()=>{
-    if(!confirmDel[k]){confirmDel[k]=true;renderPlan();return}
-    confirmDel[k]=false;delete plan.metas[k];saveNow();renderPlan();renderMyTree();renderCheckin();
+    if(!confirmDel[g.id]){confirmDel[g.id]=true;renderPlan();return}
+    confirmDel[g.id]=false;
+    plan.metas[k]=goalsOf(k).filter(x=>x.id!==g.id);delete plan.checkins[g.id];
+    saveNow();renderPlan();renderMyTree();renderCheckin();
   });
   return el("div",{class:"goalbox"},[
-    el("span",{class:"small muted",text:"Minha meta do trimestre"}),
+    el("span",{class:"small muted",text:total>1?"Meta "+n+" de "+total:"Minha meta do trimestre"}),
     el("span",{class:"t",text:g.meta||g.acao}),
     el("span",{text:"Eu vou "+(g.acao||"—").replace(/^eu vou\s*/i,"").replace(/^./,c=>c.toLowerCase())+", "+(+g.vezes||1)+(+g.vezes===1?" vez":" vezes")+" por semana."}),
     g.seEntao?el("span",{class:"small",text:"Plano B: "+g.seEntao}):null,
-    pctRow(pr),
+    pctRow(goalProgress(g)),
     el("span",{class:"tag",text:g.compartilhar?"Aparece no mural da família":"Fora do mural"}),
     el("div",{class:"row"},[edit,del])
   ]);
 }
-function goalForm(p){
-  const k=p.k,d=drafts[k],id=s=>k+"-"+s;
+function goalForm(p,dk,gid){
+  const k=p.k,d=drafts[dk],id=s=>dk+"-"+s;
   const ideas=el("div",{class:"ideas"});
   IDEIAS[k].forEach(it=>{const b=el("button",{type:"button",class:"chip"},[it[0]+" · "+it[1]]);b.addEventListener("click",()=>{d.meta=it[0];d.acao=it[1];d.vezes=it[2];renderPlan()});ideas.appendChild(b)});
   const meta=el("input",{type:"text",id:id("meta"),placeholder:"Ex.: "+IDEIAS[k][0][0]});meta.value=d.meta||"";meta.addEventListener("input",e=>{d.meta=e.target.value});
@@ -635,13 +658,17 @@ function goalForm(p){
   const save=el("button",{type:"button",class:"btn primary"},["Salvar meta"]);
   save.addEventListener("click",()=>{
     if(!(d.meta||"").trim()||!(d.acao||"").trim()){err.textContent="Preencha a meta do trimestre e o compromisso para salvar.";return}
-    plan.metas[k]={meta:d.meta.trim(),acao:d.acao.trim(),vezes:+d.vezes||1,seEntao:(d.seEntao||"").trim(),compartilhar:!!d.compartilhar};
-    editing[k]=false;delete drafts[k];saveNow();renderPlan();renderMyTree();renderCheckin();
+    const nova={id:gid||newId(),meta:d.meta.trim(),acao:d.acao.trim(),vezes:+d.vezes||1,seEntao:(d.seEntao||"").trim(),compartilhar:!!d.compartilhar};
+    const lista=goalsOf(k).slice();
+    const i=lista.findIndex(x=>x.id===nova.id);
+    if(i>=0)lista[i]=nova;else lista.push(nova);
+    plan.metas[k]=lista;
+    editing[dk]=false;delete drafts[dk];saveNow();renderPlan();renderMyTree();renderCheckin();
   });
   const cancel=el("button",{type:"button",class:"btn"},["Cancelar"]);
-  cancel.addEventListener("click",()=>{editing[k]=false;delete drafts[k];renderPlan()});
+  cancel.addEventListener("click",()=>{editing[dk]=false;delete drafts[dk];renderPlan()});
   return el("div",{class:"formbox"},[
-    el("p",{class:"small muted",text:"Toque numa ideia para começar ou escreva a sua:"}),
+    el("p",{class:"small muted",text:gid?"Editando meta":"Toque numa ideia para começar ou escreva a sua:"}),
     ideas,
     el("div",{class:"field"},[el("label",{for:id("meta"),text:"1. Meta do trimestre (aonde quero chegar)"}),meta]),
     el("div",{class:"row"},[
@@ -672,20 +699,22 @@ function renderCheckin(){
     rows.appendChild(el("div",{class:"card empty"},[el("p",{text:"Você ainda não tem metas neste trimestre."}),b]));
   }
   ativos.forEach(p=>{
-    const g=goalOf(p.k),alvo=+g.vezes||1,n=weekCount(p.k,mon);
-    const days=el("div",{class:"days"});
-    for(let i=0;i<7;i++){
-      const d=addDays(mon,i),key=iso(d),on=!!((plan.checkins[p.k]||{})[key]);
-      const b=el("button",{type:"button",class:"day","aria-pressed":on?"true":"false","aria-label":DIAS[i]+" "+d.getDate()+" de "+MESES[d.getMonth()]},[DIAS[i],el("b",{text:String(d.getDate())})]);
-      if(d>t)b.disabled=true;
-      b.addEventListener("click",()=>{const c=plan.checkins[p.k]||(plan.checkins[p.k]={});if(c[key])delete c[key];else c[key]=true;scheduleSave();renderCheckin();renderMyTree()});
-      days.appendChild(b);
-    }
-    rows.appendChild(el("div",{class:"card pcard",style:pv(p.part)},[
-      el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.part]}),el("div",{},[el("h3",{text:g.acao||g.meta}),el("span",{class:"pill "+(n>=alvo?"ok":"no"),text:n+" de "+alvo+" nesta semana"})])]),
-      g.seEntao?el("p",{class:"muted small",text:"Plano B: "+g.seEntao}):null,
-      days
-    ]));
+    goalsOf(p.k).filter(validGoal).forEach(g=>{
+      const alvo=+g.vezes||1,n=weekCount(g.id,mon);
+      const days=el("div",{class:"days"});
+      for(let i=0;i<7;i++){
+        const d=addDays(mon,i),key=iso(d),on=!!((plan.checkins[g.id]||{})[key]);
+        const b=el("button",{type:"button",class:"day","aria-pressed":on?"true":"false","aria-label":DIAS[i]+" "+d.getDate()+" de "+MESES[d.getMonth()]},[DIAS[i],el("b",{text:String(d.getDate())})]);
+        if(d>t)b.disabled=true;
+        b.addEventListener("click",()=>{const c=plan.checkins[g.id]||(plan.checkins[g.id]={});if(c[key])delete c[key];else c[key]=true;scheduleSave();renderCheckin();renderMyTree()});
+        days.appendChild(b);
+      }
+      rows.appendChild(el("div",{class:"card pcard",style:pv(p.part)},[
+        el("div",{class:"phead"},[el("div",{class:"picon",html:ICONS[p.part]}),el("div",{},[el("span",{class:"small muted",text:p.sub}),el("h3",{text:g.acao||g.meta}),el("span",{class:"pill "+(n>=alvo?"ok":"no"),text:n+" de "+alvo+" nesta semana"})])]),
+        g.seEntao?el("p",{class:"muted small",text:"Plano B: "+g.seEntao}):null,
+        days
+      ]));
+    });
   });
   const r=(plan.semanas||{})[iso(mon)]||{};
   $("r-ajudou").value=r.ajudou||"";$("r-atrapalhou").value=r.atrapalhou||"";$("r-ajuste").value=r.ajuste||"";
@@ -702,21 +731,21 @@ function renderMural(){
   order.forEach(i=>{
     const q=((muralDocs[i]||{}).quarters||{})[quarter]||{metas:[],colheita:null};
     const nome=i===uid?"Sua árvore":(String((muralDocs[i]||{}).nome||"").split(" ")[0]||"Alguém da família");
-    const metas={};(q.metas||[]).forEach(m=>{if(m&&m.pilar)metas[MIGRA[m.pilar]||m.pilar]=m});
-    const pr={};PILARES.forEach(p=>{pr[p.part]=metas[p.k]?(+metas[p.k].progresso||0):null});
+    const metas={};(q.metas||[]).forEach(m=>{if(m&&m.pilar){const pk=MIGRA[m.pilar]||m.pilar;(metas[pk]=metas[pk]||[]).push(m)}});
+    const pr={};PILARES.forEach(p=>{const l=metas[p.k];pr[p.part]=l&&l.length?Math.round(l.reduce((s,m)=>s+(+m.progresso||0),0)/l.length):null});
     const grid=el("div",{class:"treegrid"});
     grid.appendChild(el("div",{class:"tree",html:treeSVG(pr,"Árvore de "+nome)}));
     PILARES.forEach(p=>{
-      const m=metas[p.k];
-      grid.appendChild(el("div",{class:"anno a-"+p.part,style:pv(p.part)},m?[
-        el("span",{class:"k",text:p.sub+" · "+p.nome}),
-        el("span",{class:"t",text:String(m.meta||m.acao||"")}),
-        m.acao?el("span",{class:"small",text:String(m.acao)+" · "+(+m.vezes||1)+"x por semana"}):null,
-        pctRow(m.progresso)
-      ]:[
-        el("span",{class:"k",text:p.sub+" · "+p.nome}),
-        el("span",{class:"small muted",text:"Meta não compartilhada"})
-      ]));
+      const l=metas[p.k]||[];
+      const items=[el("span",{class:"k",text:p.sub+" · "+p.nome})];
+      if(!l.length)items.push(el("span",{class:"small muted",text:"Meta não compartilhada"}));
+      l.forEach((m,j)=>{
+        if(j>0)items.push(el("hr",{style:"border:0;border-top:1px dashed var(--line);margin:6px 0;width:100%"}));
+        items.push(el("span",{class:"t",text:String(m.meta||m.acao||"")}));
+        if(m.acao)items.push(el("span",{class:"small",text:String(m.acao)+" · "+(+m.vezes||1)+"x por semana"}));
+        items.push(pctRow(m.progresso));
+      });
+      grid.appendChild(el("div",{class:"anno a-"+p.part,style:pv(p.part)},items));
     });
     const kids=[el("h3",{text:i===uid?nome:"Árvore de "+nome}),el("div",{class:"scene"},[grid])];
     if(q.colheita){
